@@ -1,0 +1,25 @@
+import os
+import pty
+import subprocess
+
+os.environ["PATH"] += ":/home/codespace/nvm/current/bin"
+
+print("Environment PATH:", os.environ.get("PATH"))
+print("Testing GitHub Copilot CLI with a simple prompt...")
+test_prompt = "hello Copilot, what is git"
+
+try:
+    master, slave = pty.openpty()  # Create a pseudo-terminal
+    process = subprocess.Popen(
+        ["/home/codespace/nvm/current/bin/github-copilot-cli", "what-the-shell", test_prompt],
+        stdin=slave, stdout=slave, stderr=slave, env=os.environ
+    )
+    os.close(slave)
+
+    stdout = os.read(master, 1024).decode("utf-8")
+    print("STDOUT:", stdout)
+
+except FileNotFoundError:
+    print("❌ GitHub Copilot CLI is not installed or not in the PATH. Exiting...")
+    print("Please install it using: npm install -g @githubnext/github-copilot-cli")
+    exit(1)
