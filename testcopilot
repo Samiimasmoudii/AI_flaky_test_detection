@@ -1,0 +1,127 @@
+import os
+import ast
+import subprocess
+
+
+
+# Function to extract functions and classes from a Python file
+def extract_code_blocks(file_path):
+    with open(file_path, "r") as f:
+        file_content = f.read()
+
+    tree = ast.parse(file_content)
+    code_blocks = []
+
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            start_line = node.lineno - 1
+            end_line = node.end_lineno if hasattr(node, 'end_lineno') else None
+            block_content = "\n".join(file_content.splitlines()[start_line:end_line])
+            code_blocks.append(("Function", node.name, block_content))
+        elif isinstance(node, ast.ClassDef):
+            # Add the entire class
+            start_line = node.lineno - 1
+            end_line = node.end_lineno if hasattr(node, 'end_lineno') else None
+            block_content = "\n".join(file_content.splitlines()[start_line:end_line])
+            code_blocks.append(("Class", node.name, block_content))
+
+            # Add methods within the class
+            for sub_node in node.body:
+                if isinstance(sub_node, ast.FunctionDef):
+                    start_line = sub_node.lineno - 1
+                    end_line = sub_node.end_lineno if hasattr(sub_node, 'end_lineno') else None
+                    method_content = "\n".join(file_content.splitlines()[start_line:end_line])
+                    code_blocks.append(("Method", f"{node.name}.{sub_node.name}", method_content))
+
+    return code_blocks
+
+# Step 0: Test GitHub Copilot CLI
+print("Testing GitHub Copilot CLI with a simple prompt...")
+test_prompt = "hello Copilot, what is git"
+try:
+    test_result = subprocess.run(
+        ["github-copilot-cli", "what-the-shell", test_prompt],
+        capture_output=True  # Only capture output, no timeout or text mode
+    )
+
+    print(f"Command executed: {' '.join(['github-copilot-cli', 'what-the-shell', test_prompt])}")
+    print(f"Return Code: {test_result.returncode}")
+    print(f"STDOUT: {test_result.stdout.decode('utf-8').strip()}")
+    print(f"STDERR: {test_result.stderr.decode('utf-8').strip()}")
+
+    if test_result.returncode == 0 and test_result.stdout.strip():
+        print("✅ GitHub Copilot CLI is working correctly.")
+    else:
+        print("❌ GitHub Copilot CLI test failed. Exiting...")
+        exit(1)
+
+except FileNotFoundError:
+    print("❌ GitHub Copilot CLI is not installed or not in the PATH. Exiting...")
+    print("Please install it using: npm install -g @githubnext/github-copilot-cli")
+    exit(1)
+
+# Step 1: List files in the directory
+flaky_dir = "./flaky_code"
+print(f"Listing files in the {flaky_dir} folder:")
+files = os.listdir(flaky_dir)
+for f in files:
+    print(f)
+
+# Step 2: Ask user for a filename and validate it
+while True:
+    filename = input("Enter the file name you want to analyze: ").strip()
+    file_path = os.path.join(flaky_dir, filename)
+
+    if os.path.exists(file_path):
+        print(f"✅ File '{filename}' found.")
+        break
+    else:
+        print(f"❌ File '{filename}' does not exist in the '{flaky_dir}' folder. Please try again.")
+
+# Step 3: Check if the file exists
+if not os.path.exists(file_path):
+    print(f"File {file_path} does not exist!")
+    exit(1)
+
+# Step 4: Extract functions and classes
+print(f"Extracting functions and classes from '{file_path}'...")
+code_blocks = extract_code_blocks(file_path)
+
+if not code_blocks:
+    print("No functions or classes found in the file.")
+    exit(0)
+
+print(f"✅ Found {len(code_blocks)} code blocks (functions/classes) in the file.")
+
+# Step 5: Analyze each code block using GitHub Copilot CLI
+for i, (block_type, name, block_content) in enumerate(code_blocks):
+    print(f"\nAnalyzing {block_type} '{name}' ({i + 1}/{len(code_blocks)})...")
+    prompt = f"""
+Analyze the following Python {block_type.lower()} and suggest improvements:
+
+<begin code>
+{block_content}
+<end code>
+"""
+    try:
+        result = subprocess.run(
+            ["github-copilot-cli", "what-the-shell", prompt],
+            capture_output=True,
+            text=True,
+            timeout=30  # Increased timeout
+        )
+
+        if result.returncode == 0:
+            print(f"✅ Analysis for {block_type} '{name}' complete. Suggestions:")
+            print(result.stdout.strip())
+        else:
+            print(f"❌ Failed to analyze {block_type} '{name}'. Error:")
+            print(result.stderr.strip())
+
+    except subprocess.TimeoutExpired:
+        print(f"⚠️ Analysis for {block_type} '{name}' timed out. Skipping...")
+
+    except FileNotFoundError:
+        print("❌ GitHub Copilot CLI is not installed or not in the PATH.")
+        print("Please install it using: npm install -g @githubnext/github-copilot-cli")
+        break
