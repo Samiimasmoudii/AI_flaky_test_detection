@@ -304,6 +304,7 @@ class NikaMap(NDDataArray):
             label = "Uncertainty"
         elif item in ["signal", None]:
             data = np.ma.array(self.uncertainty.array * self.unit, mask=self.mask)
+            #developer change it from self.data to self.unvertainty.array
             label = "Brightness"
         else:
             raise ValueError("must be in (None|signal|uncertainty|snr)")

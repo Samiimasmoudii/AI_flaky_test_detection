@@ -2,7 +2,7 @@ import os
 from llama_cpp import Llama
 
 # Step 1: List files in the flaky_code directory
-flaky_dir = "./flaky_code"
+flaky_dir = "./flaky_code_NIO"
 print(f"Listing files in the {flaky_dir} folder:")
 files = os.listdir(flaky_dir)
 for f in files:
@@ -42,13 +42,27 @@ Please help me with:
 print("🧠 Loading LLaMA 3 model...")
 llm = Llama(
     model_path="inc/models/Meta-Llama-3.1-8B-Instruct-Q4_K_L.gguf",
-    n_ctx=20000,           # Adjust context if you have memory issues
+    n_ctx=14000,           # Adjust context if you have memory issues
     n_threads=4,
     verbose=False
 )
 
 print("🤖 Analyzing the flaky code using LLaMA 3...")
-response = llm(prompt, max_tokens=512)
+
+
+response_stream = llm(prompt, max_tokens=512, stream=True)
+
+print("✅ Analysis in progress. Streaming output:\n")
+response_text = ""
+for chunk in response_stream:
+    token = chunk["choices"][0]["text"]
+    print(token, end="", flush=True)
+    response_text += token
+
+print("\n\n✅ Full response received.")
 
 print("✅ Analysis complete. Here are the suggestions:\n")
 print(response["choices"][0]["text"].strip())
+
+
+# Fails to run Locally.. context window too big and cannot analyse the whole code. Memory saturated
