@@ -1,9 +1,11 @@
-from config import RESULTS_DIR, SAMPLE_SIZE
-from data_loader import load_and_clean_csv
-from github_utils import get_changed_files, download_file_content
-from processor import save_versions, run_llm_on_file, compare_fixes
+from inc.config import RESULTS_DIR, SAMPLE_SIZE
+from inc.data_loader import load_and_clean_csv
+from inc.github_utils import get_changed_files, download_file_content
+from inc.processor import save_versions, run_llm_on_file, compare_fixes
 import os
 from pathlib import Path
+import pandas as pd
+
 
 def ensure_directories():
     """Ensure all required directories exist"""
@@ -11,7 +13,7 @@ def ensure_directories():
 
 def process_repo(row):
     """Process a single repository entry"""
-    url, sha, test_path, category = row['Project URL'], row['SHA Detected'], row['Pytest Test Name (PathToFile::TestClass::TestMethod or PathToFile::TestMethod)'], row['category']
+    url, sha, test_path, category = row['Project URL'], row['SHA Detected'], row['Pytest Test Name (PathToFile::TestClass::TestMethod or PathToFile::TestMethod)'], row['Category']
     owner, repo = url.rstrip("/").split("/")[-2:]
     
     try:
@@ -42,7 +44,7 @@ def process_repo(row):
 
 def main():
     ensure_directories()
-    CSV_PATH = "py-data.csv"
+    CSV_PATH = "data/py-data.csv"
     
     if not os.path.exists(CSV_PATH):
         raise FileNotFoundError(f"CSV file not found: {CSV_PATH}")

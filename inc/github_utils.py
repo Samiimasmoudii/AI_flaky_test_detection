@@ -1,6 +1,6 @@
 import requests
 import base64
-from config import GITHUB_API, HEADERS
+from .config import GITHUB_API, HEADERS
 
 def get_changed_files(owner, repo, sha):
     url = f"{GITHUB_API}/repos/{owner}/{repo}/commits/{sha}"

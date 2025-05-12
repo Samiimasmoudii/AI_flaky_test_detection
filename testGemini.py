@@ -1,5 +1,4 @@
 import os
-from llama_cpp import Llama
 from google import genai
 from dotenv import load_dotenv
 

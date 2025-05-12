@@ -1,6 +1,6 @@
 import difflib
 from pathlib import Path
-from config import RESULTS_DIR
+from .config import RESULTS_DIR
 import google.generativeai as genai
 import os
 
