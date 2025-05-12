@@ -1,0 +1,6 @@
+https://github.com/SekouD/mlconjug@840e990bd96b56785a68712e9729582ede168ec2: unsupported operand type(s) for /: 'PosixPath' and 'float'
+https://github.com/SekouD/mlconjug@840e990bd96b56785a68712e9729582ede168ec2: unsupported operand type(s) for /: 'PosixPath' and 'float'
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/voxpupuli/puppetboard/issues/646@88401f64b20da20edaf14558d6c0e9bdc697de3b: Failed to fetch commit: 404

@@ -15,4 +15,4 @@ if not GEMINI_API_KEY:
 
 # Directory settings
 RESULTS_DIR = Path("results")
-SAMPLE_SIZE = 5  # Number of repositories to process
+SAMPLE_SIZE = 1600 # Number of repositories to process
