@@ -4,3 +4,71 @@ https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Faile
 https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
 https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
 https://github.com/voxpupuli/puppetboard/issues/646@88401f64b20da20edaf14558d6c0e9bdc697de3b: Failed to fetch commit: 404
+https://github.com/SekouD/mlconjug@840e990bd96b56785a68712e9729582ede168ec2: unsupported operand type(s) for /: 'PosixPath' and 'float'
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/voxpupuli/puppetboard/issues/646@88401f64b20da20edaf14558d6c0e9bdc697de3b: Failed to fetch commit: 404
+https://github.com/raphaelvallat/pingouin/issues/211@cc5d687e24453e79987991484f9311e738bcaa59: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/mrmechko/neon@42ad78e3d79583a93abce6d06b81dafc29017514: unsupported operand type(s) for /: 'PosixPath' and 'float'
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/willvousden/ptemcee/issues/16@a411be2e29e39585212c92acea1893f955aa9be8: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/scrapinghub/shub@ 7297d6b05b487749d99a4d94eea2f2de3e558f8a: Failed to fetch commit: 422
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/brightway-lca/stats_arrays@ 3d3480d064365571e64e736dcbd778badb1210db: Failed to fetch commit: 422
+https://github.com/Cognexa/plcx/issues/43@eba01c1b25b263bbb9f0aa3708cba971007c8362: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/ElementAI/greensim@f160e8b57d69f6ef469f2e991cc07b7721e08a91: Failed to fetch commit: 404
+https://github.com/agronholm/typeguard@ 2fe7a63e7e7fe6b7910fd423ba82eea4bffb1f17: Failed to fetch commit: 422
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/gmggroup/omf@bf0cfaa4d05c438606d7b4561166bf12d2c1be74: Failed to fetch commit: 422
+https://github.com/Netflix-Skunkworks/policyuniverse/issues/149@990ffe88f11c457b68e992106e63cf785af34fee: Failed to fetch commit: 404
+https://github.com/hgrecco/pint/issues/1412@fb5c5bd876a984c750cb634d814d95d6441c817c: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/cronofy/pycronofy/issues/72@eac7d290e3f3638d82c84d1c51a46c10257a6e20: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/brightway-lca/stats_arrays@ 3d3480d064365571e64e736dcbd778badb1210db: Failed to fetch commit: 422
+https://github.com/ww-tech/primrose/issues/113@b4dd98ca298c6d70c2fb7a9e5ff1c768306e6899: Failed to fetch commit: 404
+https://github.com/laike9m/pdir2/issues/58@cc6bfc6c23addc21aef1ef667ddad537f52b0656: Failed to fetch commit: 404
+https://github.com/cahoy/NestedDictionary@881f0ea8af36a60fcd1b9d7a84b1aec4cd7072b2: unsupported operand type(s) for /: 'PosixPath' and 'float'
+https://github.com/pydicom/pydicom/issues/1540@1908b294b2c32c98420c6624c69fc3e294545178: Failed to fetch commit: 404
+https://github.com/AshtonUPS/Py-MI-PS@2d22327c75bac1b58a4804a61e7a703ecc5ba978: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/yukinotenshi/pydeploy/issues/5@e3ddf907b293c9da28503b3d72414a303c5dfbed: Failed to fetch commit: 404
+https://github.com/verdan/pyatlasclient/issues/12@afb4bb6c169c7aedefaac91f12e150ad9c1da8db: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/filestack/filestack-python@bfd98e91d3300d2fbae0569acb4863f9e77358cd: unsupported operand type(s) for /: 'PosixPath' and 'float'
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/jerodg/jgutils@6c8ed6aca37d509af8ce1b57635fad62f1c846b4: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/nithinmurali/pygsheets/issues/519@48158e3a2c20d8b84a28b117ae1024bd4dedee08: Failed to fetch commit: 404
+https://github.com/agronholm/typeguard@ 2fe7a63e7e7fe6b7910fd423ba82eea4bffb1f17: Failed to fetch commit: 422
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/grd349/PBjam/issues/265@0c5591a1b1adeb2b47d078894118be4e39471cdc: Failed to fetch commit: 404
+https://github.com/pyasi/pybuildkite/issues/72@0cf6db2adcc01bf3014b84da5e15f6e1bc50b46b: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/matheusbsilva/plai/issues/34@1d3bfb0438bb6bd2f8d8e42f17207f9449319763: Failed to fetch commit: 404
+https://github.com/dgilland/pydash/issues/170@24ad0e43b51b367d00447c45baa68c9c03ad1a52: Failed to fetch commit: 404
+https://github.com/benchmark-urbanism/cityseer-api@7177d53256e24186329a95b5af712fc6a59ef4d9: unsupported operand type(s) for /: 'PosixPath' and 'float'
+https://github.com/swstephe/py2jdbc/issues/8@515d06a48e54ca9f690f94fd795e49ba7758fcd4: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/surycat/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/osantana/prettyconf/issues/47@f278b6ac6786f6ab8fe41ffacde0cc1e41cee207: Failed to fetch commit: 404
+https://github.com/optiflows/tukio@116b35dbceae899d7996b1788449a6e31e3f4512: Failed to fetch commit: 404
+https://github.com/brightway-lca/stats_arrays@ 3d3480d064365571e64e736dcbd778badb1210db: Failed to fetch commit: 422
+https://github.com/agronholm/typeguard@ 2fe7a63e7e7fe6b7910fd423ba82eea4bffb1f17: Failed to fetch commit: 422
+https://github.com/macropin/django-registration/tree/master/registration@ac3d8728eb453eea78fc19ba5124f4cd8c16c4c3: Failed to fetch commit: 404
