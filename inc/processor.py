@@ -7,6 +7,19 @@ import re
 import csv
 
 
+
+## In case We're using natural language toolkit instead of Hugging face 'evaluate' library
+#import nltk
+#from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+#from nltk.tokenize import word_tokenize
+#from rouge_score import rouge_scorer
+#nltk.download('punkt')
+
+import evaluate
+bleu_metric = evaluate.load("bleu")
+rouge_metric = evaluate.load("rouge")
+
+
 FLAKINESS_TYPES = {
     "": "No specific flakiness type provided",
     "OD": "Order-Dependent flaky tests - Tests that pass/fail depending on the order of execution",
@@ -123,36 +136,67 @@ def compare_dev_llm(dev_patch: str, llm_patch: str):
 
 def collect_results(base_dir="results", output_csv="llm_patch_scores.csv"):
     rows = []
-    for comp_file in Path(base_dir).rglob("comparison.txt"):
-        relative = comp_file.relative_to(base_dir)
-        test_category = relative.parts[0]
-        fix_category = relative.parts[1]
-        # Get flakiness type (assumed encoded in fix_category or .txt file)
-        flakiness = ""
-        for code in FLAKINESS_TYPES:
-            if code and code in fix_category:
-                flakiness = code
-                break
+    for category_dir in Path(base_dir).iterdir():
+        if not category_dir.is_dir():
+            continue
 
-        # Read content
-        content = comp_file.read_text()
-        dev_patch, llm_patch = extract_patch_blocks(content)
-        dev_total, llm_total, matched, score = compare_dev_llm(dev_patch, llm_patch)
+        flakiness_type = category_dir.name
 
-        rows.append({
-            "Test Category": test_category,
-            "Fix Category": fix_category,
-            "Flakiness Type": flakiness,
-            "Dev Lines Changed": dev_total,
-            "LLM Lines Changed": llm_total,
-            "Matched Lines": matched,
-            "Match Score (%)": score
-        })
+        for test_dir in category_dir.iterdir():
+            if not test_dir.is_dir():
+                continue
 
-    # Save CSV
-    with open(output_csv, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
-        writer.writeheader()
-        writer.writerows(rows)
+            dev_patch_file = test_dir / "developer_patch.diff"
+            llm_file = test_dir / "LLM_suggestion.txt"
 
-    print(f"Saved patch match scores to {output_csv}")
+            if not dev_patch_file.exists() or not llm_file.exists():
+                continue
+
+            dev_patch = dev_patch_file.read_text(encoding="utf-8").strip()
+            llm_patch = llm_file.read_text(encoding="utf-8").strip()
+
+            bleu = compute_bleu_score(dev_patch, llm_patch)
+            rouge = compute_rouge_score(dev_patch, llm_patch)
+            dev_added, dev_removed = count_added_removed_lines(dev_patch)
+            llm_added, llm_removed = count_added_removed_lines(llm_patch)
+
+            rows.append({
+                "Test Category": flakiness_type,
+                "File Path": test_dir.name,
+                "BLEU Score": bleu,
+                "ROUGE-L Score": rouge,
+                "Dev Changed": f"+{dev_added} ; -{dev_removed}",
+                "LLM Changed": f"+{llm_added} ; -{llm_removed}"
+            })
+
+    if rows:
+        with open(output_csv, "w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+            writer.writeheader()
+            writer.writerows(rows)
+        print(f"✅ Saved BLEU/ROUGE scores and line counts to {output_csv}")
+    else:
+        print("⚠️ No valid results found in the given structure.")
+
+
+def count_added_removed_lines(diff_text: str):
+    added = sum(1 for line in diff_text.splitlines() if line.startswith("+") and not line.startswith("+++"))
+    removed = sum(1 for line in diff_text.splitlines() if line.startswith("-") and not line.startswith("---"))
+    return added, removed
+
+
+
+def compute_bleu_score(reference_text: str, candidate_text: str) -> float:
+    results = bleu_metric.compute(
+        predictions=[candidate_text],
+        references=[[reference_text]]
+    )
+    return round(results["bleu"], 4)
+
+
+def compute_rouge_score(reference_text: str, candidate_text: str) -> float:
+    results = rouge_metric.compute(
+        predictions=[candidate_text],
+        references=[reference_text]
+    )
+    return round(results["rougeL"], 4)

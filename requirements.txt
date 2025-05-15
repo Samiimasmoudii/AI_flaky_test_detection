@@ -1,0 +1,4 @@
+nltk
+rouge-score
+pandas
+evaluate
