@@ -9,13 +9,17 @@ from pathlib import Path
 import pandas as pd
 
 def setup_logging():
-    """Setup logging configuration"""
+    """Setup logging configuration and save logs to /logs folder"""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_dir = "logs"
+    os.makedirs(log_dir, exist_ok=True)  # Create logs directory if it doesn't exist
+    log_path = os.path.join(log_dir, f'processing_{timestamp}.log')
+
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(f'processing_{timestamp}.log'),
+            logging.FileHandler(log_path, encoding='utf-8'),
             logging.StreamHandler()
         ]
     )
@@ -72,7 +76,7 @@ def process_repo(row):
                 
     except Exception as e:
         logging.error(f"❌ Error processing {url}@{sha}: {str(e)}")
-        with open("error_log.txt", "a") as f:
+        with open("logs/error_log.txt", "a") as f:
             f.write(f"{url}@{sha}: {str(e)}\n")
 
 def main():
