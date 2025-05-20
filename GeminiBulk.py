@@ -3,7 +3,7 @@ from datetime import datetime
 from inc.config import RESULTS_DIR, SAMPLE_SIZE
 from inc.data_loader import load_and_clean_csv
 from inc.github_utils import get_changed_files, download_file_content
-from inc.processor import save_versions, run_llm_on_file, compare_fixes
+from inc.processor import save_versions, run_llm_on_before_file, compare_fixes
 import os
 from pathlib import Path
 import pandas as pd
@@ -61,7 +61,7 @@ def process_repo(row):
                 outdir.mkdir(parents=True, exist_ok=True)
                 
                 save_versions(outdir, before, after)
-                llm_fix = run_llm_on_file(outdir / "before.py",category)
+                llm_fix = run_llm_on_before_file(outdir / "before.py",category)
                 (outdir / "LLM_suggestion.txt").write_text(llm_fix)
 
 

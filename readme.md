@@ -2,6 +2,8 @@
 
 imports RESULTS_DIR and SAMPLE_SIZE from inc.config to define the output directory for results and the number of samples to process.
 
+install requirements using 
+``` pip install -r requirements.txt ```
 
 ## Load and Clean Data:
 

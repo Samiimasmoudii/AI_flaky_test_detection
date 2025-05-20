@@ -48,7 +48,7 @@ def save_versions(outdir, before, after):
     )
     (outdir / "developer_patch.diff").write_text("\n".join(diff), encoding="utf-8")
 
-def run_llm_on_file(filepath, category=""):
+def run_llm_on_before_file(filepath, category=""):
     try:
         # Configure Gemini API
         genai.configure(api_key=os.getenv('GEMINI_API_KEY'))

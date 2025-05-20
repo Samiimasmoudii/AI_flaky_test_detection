@@ -2,3 +2,6 @@ nltk
 rouge-score
 pandas
 evaluate
+google.generativeai
+requests
+dotenv
