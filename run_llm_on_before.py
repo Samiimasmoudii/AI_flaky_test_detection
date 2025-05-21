@@ -1,12 +1,26 @@
 import logging
 from datetime import datetime
 import os
+import shutil
 from pathlib import Path
 import google.generativeai as genai
+import re
+import time
+from dotenv import load_dotenv
 from inc.config import RESULTS_DIR
-from inc.processor import run_llm_on_before_file, compare_fixes
+from inc.processor import run_llm_on_before_file, compare_fixes, MODEL_NAME
 
-MODEL_NAME = "Gemini2.5"  # Can be changed for different models
+# Load environment variables from .env file
+load_dotenv()
+
+# Check for required environment variables
+required_env_vars = ['GITHUB_TOKEN', 'GEMINI_API_KEY']
+missing_vars = [var for var in required_env_vars if not os.getenv(var)]
+if missing_vars:
+    raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+
+MAX_RETRIES = 3
+RATE_LIMIT_DELAY = 6  # 6 seconds between requests (10 requests per minute)
 
 def setup_logging():
     """Setup logging configuration and save logs to /logs folder"""
@@ -24,13 +38,13 @@ def setup_logging():
         ]
     )
 
-def get_next_test_number(folder_path, model_name):
-    """Get the next test number for a given model"""
+def get_next_test_number(test_case_dir, model_name):
+    """Get the next test number for a given model in a test case directory"""
     pattern = f"{model_name}_Test(\\d+)"
     max_number = 0
     
-    if folder_path.exists():
-        for item in folder_path.iterdir():
+    if test_case_dir.exists():
+        for item in test_case_dir.iterdir():
             if item.is_dir():
                 match = re.match(pattern, item.name)
                 if match:
@@ -39,11 +53,11 @@ def get_next_test_number(folder_path, model_name):
     
     return max_number + 1
 
-def create_model_test_folder(base_folder, model_name):
+def create_model_test_folder(test_case_dir, model_name):
     """Create a new test folder for the model with incremental numbering"""
-    next_number = get_next_test_number(base_folder, model_name)
+    next_number = get_next_test_number(test_case_dir, model_name)
     test_folder_name = f"{model_name}_Test{next_number:02d}"
-    test_folder = base_folder / test_folder_name
+    test_folder = test_case_dir / test_folder_name
     test_folder.mkdir(parents=True, exist_ok=True)
     return test_folder
 
@@ -52,10 +66,9 @@ def process_result_folder(folder_path):
     logging.info(f"Processing folder: {folder_path}")
     
     before_file = folder_path / "before.py"
-    after_file = folder_path / "after.py"
     
-    if not before_file.exists() or not after_file.exists():
-        logging.warning(f"Skipping {folder_path} - missing before.py or after.py")
+    if not before_file.exists():
+        logging.warning(f"Skipping {folder_path} - missing before.py")
         return
     
     try:
@@ -63,30 +76,53 @@ def process_result_folder(folder_path):
         category = folder_path.parent.name
         
         # Create a new test folder for this run
-        model_test_folder = create_model_test_folder(folder_path, MODEL_NAME)
+        model_test_folder = create_model_test_folder(folder_path, MODEL_NAME.replace(".", "_"))
         logging.info(f"Created test folder: {model_test_folder}")
+        
+        # Add rate limiting delay between files
+        time.sleep(RATE_LIMIT_DELAY)
         
         # Run Gemini analysis on the before file
         llm_fix = run_llm_on_before_file(before_file, category)
         
+        if not llm_fix:
+            logging.error(f"❌ Failed to get valid fix for {before_file}")
+            return
+            
         # Save the LLM suggestion
         (model_test_folder / "llm_suggestion.txt").write_text(llm_fix)
         
-        # Copy the developer patch for reference
-        dev_patch = (folder_path / "developer_patch.diff").read_text()
-        (model_test_folder / "developer_patch.diff").write_text(dev_patch)
+        # Copy the developer patch for reference if it exists
+        dev_patch_file = folder_path / "developer_patch.diff"
+        if dev_patch_file.exists():
+            dev_patch = dev_patch_file.read_text()
+            # Save developer patch at test case level if it doesn't exist
+            if not (folder_path / "developer_patch.diff").exists():
+                (folder_path / "developer_patch.diff").write_text(dev_patch)
+            
+            # Compare the fixes
+            comparison = compare_fixes(llm_fix, dev_patch)
+            # Save the comparison in model test folder
+            (model_test_folder / "comparison.txt").write_text(comparison)
         
-        # Compare the fixes
-        comparison = compare_fixes(llm_fix, dev_patch)
-        
-        # Save the comparison
-        (model_test_folder / "comparison.txt").write_text(comparison)
+        # Create after.py in the model test folder by applying the LLM suggestion
+        try:
+            # Read the original before.py content
+            before_content = before_file.read_text()
+            
+            # TODO: Parse the LLM suggestion diff and apply it to create after.py
+            # For now, just copy the before.py as a placeholder
+            (model_test_folder / "after.py").write_text(before_content)
+            
+        except Exception as e:
+            logging.error(f"Failed to create after.py: {str(e)}")
         
         # Save metadata about this test run
         metadata = {
             "timestamp": datetime.now().isoformat(),
             "model": MODEL_NAME,
             "category": category,
+            "success": True
         }
         metadata_str = "\n".join(f"{k}: {v}" for k, v in metadata.items())
         (model_test_folder / "metadata.txt").write_text(metadata_str)
@@ -95,8 +131,20 @@ def process_result_folder(folder_path):
         
     except Exception as e:
         logging.error(f"❌ Error processing {folder_path}: {str(e)}")
+        # Save error metadata
+        if 'model_test_folder' in locals():
+            metadata = {
+                "timestamp": datetime.now().isoformat(),
+                "model": MODEL_NAME,
+                "category": category if 'category' in locals() else "unknown",
+                "success": False,
+                "error": str(e)
+            }
+            metadata_str = "\n".join(f"{k}: {v}" for k, v in metadata.items())
+            (model_test_folder / "metadata.txt").write_text(metadata_str)
+            
         with open("logs/error_log.txt", "a") as f:
-            f.write(f"{folder_path}: {str(e)}\n")
+            f.write(f"{datetime.now().isoformat()} - {folder_path}: {str(e)}\n")
 
 def main():
     setup_logging()

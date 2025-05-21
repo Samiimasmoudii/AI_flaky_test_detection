@@ -5,8 +5,10 @@ import google.generativeai as genai
 import os
 import re
 import csv
+import time
+from typing import Optional
 
-
+MODEL_NAME = "gemini-2.5-flash-preview-04-17"  # The actual model name used for API calls
 
 ## In case We're using natural language toolkit instead of Hugging face 'evaluate' library
 #import nltk
@@ -48,11 +50,43 @@ def save_versions(outdir, before, after):
     )
     (outdir / "developer_patch.diff").write_text("\n".join(diff), encoding="utf-8")
 
+def is_valid_diff(diff_text: str) -> bool:
+    """Check if the diff output is valid and non-empty."""
+    if not diff_text:
+        return False
+    lines = diff_text.strip().splitlines()
+    return any(line.startswith(('+', '-')) for line in lines)
+
+def run_llm_with_retry(prompt: str, max_retries: int = 3, delay: int = 6) -> Optional[str]:
+    """Run LLM with retry logic and rate limiting."""
+    for attempt in range(max_retries):
+        try:
+            # Rate limiting delay
+            if attempt > 0:
+                time.sleep(delay)  # Wait 6 seconds between retries (10 requests per minute)
+            
+            model = genai.GenerativeModel(MODEL_NAME)
+            response = model.generate_content(prompt)
+            
+            if not response.text or not is_valid_diff(response.text):
+                print(f"Attempt {attempt + 1}: Empty or invalid diff received, retrying...")
+                continue
+                
+            return response.text
+            
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed: {str(e)}")
+            if attempt < max_retries - 1:
+                time.sleep(delay)  # Wait before retry
+            else:
+                raise Exception(f"Failed after {max_retries} attempts: {str(e)}")
+    
+    return None
+
 def run_llm_on_before_file(filepath, category=""):
     try:
         # Configure Gemini API
         genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
-        model = genai.GenerativeModel('gemini-2.5-flash-preview-04-17')
         
         # Read the file content
         with open(filepath, 'r', encoding='utf-8') as f:
@@ -62,17 +96,21 @@ def run_llm_on_before_file(filepath, category=""):
         flakiness_desc = FLAKINESS_TYPES.get(category, FLAKINESS_TYPES[""])
         
         # Create prompt with flakiness category
-        prompt = f"""You are a Python testing expert. The following test file has {category} flaky behavior:
-{flakiness_desc}
+        prompt = f"""
+        You are a Python testing expert. The following test file exhibits flaky behavior categorized as:
 
-Generate ONLY the code fix in diff format (do not explain the changes):
+Type: {category}
+Description: {flakiness_desc}
+Step 1: Internally identify the root cause of the flakiness based on the category.
+Step 2: Fix the code using known patterns that address this type of flakiness.
+Step 3: Output ONLY the fix as a unified diff.
 
+Here is the test file:
 <code>
 {content}
 </code>
 
-
-Please provide the fixed version of the code that addresses any flaky test patterns.Output only the diff like this example:
+Please provide the fixed version of the code that addresses any flaky test patterns. Output only the diff like this example:
 --- before.py
 +++ after.py
 @@ -10,6 +10,8 @@
@@ -80,9 +118,15 @@ Please provide the fixed version of the code that addresses any flaky test patte
 +   new line
     old line"""
         
-        # Get response from Gemini
-        response = model.generate_content(prompt)
-        return response.text
+        # Get response from Gemini with retry logic
+        response = run_llm_with_retry(prompt)
+        
+        if response is None:
+            print(f"Failed to get valid response for {filepath} after all retries")
+            return ""
+            
+        return response
+        
     except Exception as e:
         print(f"Error running LLM on file {filepath}: {e}")
         return ""
