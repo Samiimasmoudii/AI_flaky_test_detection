@@ -5,3 +5,6 @@ evaluate
 google.generativeai
 requests
 dotenv
+pandas
+openpyxl
+openai
