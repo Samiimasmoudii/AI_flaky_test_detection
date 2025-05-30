@@ -22,6 +22,14 @@ GITHUB_API = "https://api.github.com"
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 logging.info(f"GITHUB_TOKEN loaded: {'Yes' if GITHUB_TOKEN else 'No'}")
 
+# GitHub API headers
+HEADERS = {}
+if GITHUB_TOKEN:
+    HEADERS = {'Authorization': f'token {GITHUB_TOKEN}'}
+    logging.info("GitHub API headers configured with token")
+else:
+    logging.warning("No GitHub token found - API requests will be rate limited")
+
 # Gemini API settings
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 logging.info(f"GEMINI_API_KEY loaded: {'Yes' if GEMINI_API_KEY else 'No'}")
@@ -31,4 +39,4 @@ if not GEMINI_API_KEY:
 
 # Directory settings
 RESULTS_DIR = Path("results")
-SAMPLE_SIZE = 1600 # Number of repositories to process
+SAMPLE_SIZE = 50000  # Process more repositories (effectively unlimited for most datasets)
