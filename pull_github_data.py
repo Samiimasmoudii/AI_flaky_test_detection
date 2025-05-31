@@ -26,17 +26,28 @@ def choose_csv_file():
     print("AVAILABLE CSV FILES")
     print("="*60)
     
+    # Map filenames to build systems
+    build_system_map = {
+        'py-data.csv': ('python', 'Python tests'),
+        'pr-data.csv': ('java_maven', 'Java Maven tests'), 
+        'gr-data.csv': ('java_gradle', 'Java Gradle tests')
+    }
+    
     for i, csv_file in enumerate(csv_files, 1):
         file_size = csv_file.stat().st_size
         size_mb = file_size / (1024 * 1024)
         
+        # Get build system info
+        build_info = build_system_map.get(csv_file.name, ('unknown', 'Unknown format'))
+        build_system, description = build_info
+        
         try:
             df = pd.read_csv(csv_file)
             row_count = len(df)
-            print(f"{i}. {csv_file.name}")
+            print(f"{i}. {csv_file.name} - {description}")
             print(f"   Size: {size_mb:.1f} MB | Rows: {row_count:,}")
         except Exception as e:
-            print(f"{i}. {csv_file.name}")
+            print(f"{i}. {csv_file.name} - {description}")
             print(f"   Size: {size_mb:.1f} MB | Error reading file: {str(e)}")
         print()
     
@@ -53,8 +64,9 @@ def choose_csv_file():
             choice_num = int(choice)
             if 1 <= choice_num <= len(csv_files):
                 selected_file = csv_files[choice_num - 1]
-                print(f"\n✅ Selected: {selected_file.name}")
-                return selected_file
+                build_system, description = build_system_map.get(selected_file.name, ('unknown', 'Unknown'))
+                print(f"\n✅ Selected: {selected_file.name} ({description})")
+                return selected_file, build_system
             else:
                 print(f"❌ Please enter a number between 1 and {len(csv_files)}")
         
@@ -98,7 +110,12 @@ def filter_dataset(df):
     """Filter dataset to only keep reliable test entries based on IDoFT status definitions"""
     # Based on IDoFT documentation: https://github.com/TestingResearchIllinois/idoft
     # Only keep tests with these reliable statuses 
-    reliable_statuses = ['Opened', 'Accepted', 'DeveloperFixed']
+    reliable_statuses = [
+        'Opened',           # PR was opened to fix the flaky test
+        'Accepted',         # PR was accepted to fix the flaky test  
+        'DeveloperFixed',   # Developer fixed the test before a PR was made
+        'InspiredAFix'      # Work inspired a fix from developer (indirect fix)
+    ]
     
     # Exclude problematic statuses that indicate tests/repos with issues
     problematic_statuses = [
@@ -107,7 +124,11 @@ def filter_dataset(df):
         'RepoArchived',     # Repository is archived
         'RepoDeleted',      # Repository no longer exists
         'Unmaintained',     # Repository inactive for 2+ years
-        'Blank'             # Not yet inspected (as requested)
+        'Blank',            # Not yet inspected (as requested)
+        'DeveloperWontFix', # Developer doesn't want a fix
+        'Rejected',         # PR was rejected by developers
+        'Skipped',          # Test should not be fixed (@Ignore, etc.)
+        'Deprecated'        # Repository is deprecated
     ]
     
     initial_count = len(df)
@@ -245,18 +266,25 @@ def main():
     
     # Let user choose CSV file
     try:
-        selected_csv = choose_csv_file()
+        selected_csv, build_system = choose_csv_file()
     except (FileNotFoundError, KeyboardInterrupt) as e:
         print(f"Error: {e}")
         return
     
-    # Detect file type
-    file_type = detect_file_type(selected_csv)
-    print(f"\n🔍 Detected file type: {file_type.upper()}")
+    # Set file type based on build system
+    if build_system == 'python':
+        file_type = 'python'
+    elif build_system in ['java_maven', 'java_gradle']:
+        file_type = 'java'
+    else:
+        # Fallback to old detection method
+        file_type = detect_file_type(selected_csv)
+        if file_type == 'unknown':
+            print("⚠️  Could not automatically detect file type. Assuming Java format.")
+            file_type = 'java'
     
-    if file_type == 'unknown':
-        print("⚠️  Could not automatically detect file type. Assuming Java format.")
-        file_type = 'txt'
+    print(f"\n🔍 Build system: {build_system.upper()}")
+    print(f"🔍 File type: {file_type.upper()}")
     
     # Load and filter CSV data
     df = pd.read_csv(selected_csv)
@@ -303,7 +331,7 @@ def main():
         print(f"\n[{i}/{len(df)}] Processing: {row['Project URL'].split('/')[-2:]}")
         
         try:
-            result = process_repo(row, file_type)
+            result = process_repo(row, file_type, build_system)
             
             if result is True:  # Success
                 success_count += 1

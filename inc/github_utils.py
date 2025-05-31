@@ -7,27 +7,95 @@ from .config import GITHUB_API, HEADERS, RESULTS_DIR
 import time
 import re
 
-def is_test_file(file_path, file_type='java'):
-    """Check if a file is actually a test file (not production code)"""
+def normalize_repository_url(url):
+    """Normalize repository URL to handle redirects and ownership changes"""
+    if not url:
+        return None
+    
+    # Remove trailing slashes and normalize
+    url = url.rstrip("/")
+    
+    # Handle different GitHub URL formats
+    if "github.com" in url:
+        # Extract owner/repo from various GitHub URL formats
+        if url.startswith("https://github.com/"):
+            parts = url.replace("https://github.com/", "").split("/")
+        elif url.startswith("http://github.com/"):
+            parts = url.replace("http://github.com/", "").split("/")
+        elif url.startswith("github.com/"):
+            parts = url.replace("github.com/", "").split("/")
+        else:
+            return url
+        
+        if len(parts) >= 2:
+            owner, repo = parts[0], parts[1]
+            return f"https://github.com/{owner}/{repo}"
+    
+    return url
+
+def is_test_file(file_path, file_type='java', build_system=None):
+    """Check if a file is actually a test file (not production code) - build system aware"""
     if not file_path:
         return False
+    
+    file_path_lower = file_path.lower()
+    filename = file_path.split('/')[-1]
+    filename_lower = filename.lower()
     
     if file_type == 'python':
         # For Python: check if it's in test directories or has test in name
         return (
-            '/test' in file_path.lower() or 
-            file_path.lower().startswith('test') or
-            'test_' in file_path.lower() or
-            '_test.' in file_path.lower()
+            '/test' in file_path_lower or 
+            '/tests/' in file_path_lower or
+            file_path_lower.startswith('test') or
+            filename_lower.startswith('test_') or
+            filename_lower.endswith('_test.py') or
+            'test_' in filename_lower or
+            '_test.' in filename_lower
         )
     else:  # Java
-        # For Java: check if it's in src/test/java or has Test in class name
-        return (
-            '/src/test/java/' in file_path or
-            file_path.endswith('Test.java') or
-            file_path.endswith('Tests.java') or
-            'Test' in file_path.split('/')[-1]  # Test in filename
-        )
+        # Build-system specific test file detection
+        if build_system == 'java_maven':
+            # Maven: strictly follows src/test/java/ convention
+            return (
+                '/src/test/java/' in file_path or
+                filename.endswith('Test.java') or
+                filename.endswith('Tests.java') or
+                filename.endswith('TestCase.java') or
+                filename.startswith('Test')
+            )
+        elif build_system == 'java_gradle':
+            # Gradle: more flexible, can use various test directories
+            return (
+                '/src/test/' in file_path or
+                '/test/' in file_path_lower or
+                '/tests/' in file_path_lower or
+                filename.endswith('Test.java') or
+                filename.endswith('Tests.java') or
+                filename.endswith('TestCase.java') or
+                filename.endswith('IT.java') or  # Integration tests
+                filename.endswith('ITCase.java') or
+                filename.endswith('Spec.java') or  # Spock specs
+                filename.startswith('Test') or
+                'Test' in filename and filename.endswith('.java')
+            )
+        else:
+            # Generic Java test detection (fallback)
+            return (
+                '/src/test/java/' in file_path or
+                '/src/test/' in file_path or
+                '/test/' in file_path_lower or
+                '/tests/' in file_path_lower or
+                filename.endswith('Test.java') or
+                filename.endswith('Tests.java') or
+                filename.endswith('TestCase.java') or
+                filename.startswith('Test') or
+                'Test' in filename and filename.endswith('.java') or
+                filename.endswith('IT.java') or
+                filename.endswith('ITCase.java') or
+                filename.endswith('Spec.java') or
+                filename.endswith('Specification.java')
+            )
 
 class GitHubAccessError(Exception):
     """Custom exception for GitHub access issues"""
@@ -190,8 +258,8 @@ def save_file_versions(output_dir, before_content, after_content, file_type='jav
     
     logging.info(f"Saved file versions to {output_dir}")
 
-def extract_test_file_path(test_name, module_path, file_type='java'):
-    """Extract the test file path from the test name and module path"""
+def extract_test_file_path(test_name, module_path, file_type='java', build_system=None):
+    """Extract the test file path from the test name and module path - build system aware"""
     if not test_name or test_name == ".":
         return None
     
@@ -204,7 +272,7 @@ def extract_test_file_path(test_name, module_path, file_type='java'):
         else:
             return test_name if test_name.endswith('.py') else f"{test_name}.py"
     
-    else:  # Java format
+    else:  # Java format - now build system aware
         parts = test_name.split('.')
         if len(parts) < 2:
             return None
@@ -212,10 +280,27 @@ def extract_test_file_path(test_name, module_path, file_type='java'):
         class_parts = parts[:-1]  # Remove method name
         file_path = '/'.join(class_parts) + '.java'
         
-        if module_path and module_path != ".":
-            file_path = f"{module_path}/src/test/java/{file_path}"
+        # Build system specific path construction
+        if build_system == 'java_maven':
+            # Maven standard: src/test/java/
+            if module_path and module_path != ".":
+                file_path = f"{module_path}/src/test/java/{file_path}"
+            else:
+                file_path = f"src/test/java/{file_path}"
+        elif build_system == 'java_gradle':
+            # Gradle can be more flexible, but usually also src/test/java/
+            # Some Gradle projects use different structures
+            if module_path and module_path != ".":
+                file_path = f"{module_path}/src/test/java/{file_path}"
+            else:
+                # Try multiple Gradle patterns
+                file_path = f"src/test/java/{file_path}"
         else:
-            file_path = f"src/test/java/{file_path}"
+            # Fallback - try standard Maven layout
+            if module_path and module_path != ".":
+                file_path = f"{module_path}/src/test/java/{file_path}"
+            else:
+                file_path = f"src/test/java/{file_path}"
         
         return file_path
 
@@ -263,7 +348,7 @@ def get_pull_request_commits(owner, repo, pr_number):
         logging.warning(f"Error getting PR commits: {str(e)}")
         return []
 
-def search_test_files_in_commits(owner, repo, commit_shas, test_name, file_type):
+def search_test_files_in_commits(owner, repo, commit_shas, test_name, file_type, build_system=None):
     """Search for test files across multiple commits"""
     all_changed_files = []
     file_extension = '.py' if file_type == 'python' else '.java'
@@ -273,10 +358,10 @@ def search_test_files_in_commits(owner, repo, commit_shas, test_name, file_type)
     for i, sha in enumerate(commit_shas):
         try:
             changed_files, parent_sha = get_changed_files(owner, repo, sha)
-            # Filter for actual test files, not just files with the right extension
+            # Filter for actual test files using build-system aware detection
             test_files = [f for f in changed_files 
-                         if f.get("filename", "").endswith(file_extension) 
-                         and is_test_file(f.get("filename", ""), file_type)]
+                         if f.get("filename", "").endswith(file_extension)
+                         and is_test_file(f.get("filename", ""), file_type, build_system)]
             
             if test_files:
                 logging.info(f"  Commit {i+1}/{len(commit_shas)} ({sha[:7]}): {len(test_files)} test {file_extension} files")
@@ -306,7 +391,9 @@ def find_test_in_files(owner, repo, all_test_files, test_name, file_type):
         return None
     
     method_name = parts[-1]  # Last part is the method name
-    logging.info(f"🔍 Searching for method '{method_name}' in available test files...")
+    class_name = parts[-2] if len(parts) >= 2 else None  # Second to last is class name
+    
+    logging.info(f"🔍 Searching for method '{method_name}' (class '{class_name}') in available test files...")
     
     for file_info in all_test_files:
         file_path = file_info.get("filename", "")
@@ -323,22 +410,49 @@ def find_test_in_files(owner, repo, all_test_files, test_name, file_type):
             if content and method_name in content:
                 # Check if it's actually a test method (not just a string occurrence)
                 lines = content.split('\n')
-                for line in lines:
-                    line = line.strip()
-                    if (line.startswith('@Test') or 
-                        'public void ' + method_name in line or
-                        'void ' + method_name + '(' in line):
-                        logging.info(f"🎯 Found method '{method_name}' in {file_path}")
+                
+                # Look for multiple test method patterns
+                for i, line in enumerate(lines):
+                    line_stripped = line.strip()
+                    
+                    # Check for test method patterns
+                    is_test_method = (
+                        # @Test annotation on this or previous lines
+                        line_stripped.startswith('@Test') or
+                        (i > 0 and lines[i-1].strip().startswith('@Test')) or
+                        # Method declaration patterns
+                        f'public void {method_name}(' in line or
+                        f'void {method_name}(' in line or
+                        # Method name with common test method patterns
+                        (f'{method_name}(' in line and 
+                         ('public' in line or 'void' in line or '@' in lines[max(0, i-2):i+1]))
+                    )
+                    
+                    if is_test_method:
+                        # Extra validation: check if class name matches (if available)
+                        if class_name:
+                            actual_class_name = file_path.split('/')[-1].replace('.java', '')
+                            if class_name.lower() not in actual_class_name.lower():
+                                logging.debug(f"Method found but class mismatch: {class_name} vs {actual_class_name}")
+                                continue
+                        
+                        logging.info(f"🎯 Found test method '{method_name}' in {file_path}")
                         return file_info
+                        
         except Exception as e:
             logging.debug(f"Error checking {file_path}: {str(e)}")
             continue
     
+    logging.info(f"❌ Test method '{method_name}' not found in any available files")
     return None
 
-def process_repo(row, file_type='java'):
+def process_repo(row, file_type='java', build_system=None):
     """Process a single repository entry with enhanced matching strategies"""
-    url = row['Project URL']
+    url = normalize_repository_url(row['Project URL'])
+    if not url:
+        logging.error(f"Invalid repository URL: {row['Project URL']}")
+        raise GitHubAccessError(f"Invalid repository URL: {row['Project URL']}")
+    
     sha = row['SHA Detected']
     category = row['Category']
     
@@ -353,7 +467,7 @@ def process_repo(row, file_type='java'):
     owner, repo = url.rstrip("/").split("/")[-2:]
     repo_info = f"{owner}/{repo}"
     
-    logging.info(f"Processing {repo_info} - {test_name}")
+    logging.info(f"Processing {repo_info} - {test_name} ({build_system})")
     
     try:
         # Strategy 1: Try the original commit first
@@ -365,10 +479,10 @@ def process_repo(row, file_type='java'):
             raise
         
         file_extension = '.py' if file_type == 'python' else '.java'
-        # Filter for actual test files, not just files with the right extension
+        # Filter for actual test files using build-system aware detection
         available_test_files = [f.get("filename", "") for f in changed_files 
-                               if f.get("filename", "").endswith(file_extension) 
-                               and is_test_file(f.get("filename", ""), file_type)]
+                               if f.get("filename", "").endswith(file_extension)
+                               and is_test_file(f.get("filename", ""), file_type, build_system)]
         
         # Strategy 2: If no test files in original commit, search in associated PR
         all_test_files = []
@@ -378,7 +492,7 @@ def process_repo(row, file_type='java'):
             # Add commit info to files - only actual test files
             for file_info in changed_files:
                 filename = file_info.get("filename", "")
-                if filename.endswith(file_extension) and is_test_file(filename, file_type):
+                if filename.endswith(file_extension) and is_test_file(filename, file_type, build_system):
                     file_info['commit_sha'] = sha
                     file_info['parent_sha'] = parent_sha
                     all_test_files.append(file_info)
@@ -393,7 +507,7 @@ def process_repo(row, file_type='java'):
                 commit_shas = get_pull_request_commits(owner, repo, pr_number)
                 
                 if commit_shas:
-                    all_test_files = search_test_files_in_commits(owner, repo, commit_shas, test_name, file_type)
+                    all_test_files = search_test_files_in_commits(owner, repo, commit_shas, test_name, file_type, build_system)
                     available_test_files = [f.get("filename", "") for f in all_test_files]
             
             if not all_test_files:
@@ -413,7 +527,7 @@ def process_repo(row, file_type='java'):
         logging.info(f"🔍 Total available test {file_extension} files: {available_test_files}")
         
         # Extract expected test file path
-        expected_test_file = extract_test_file_path(test_name, module_path, file_type)
+        expected_test_file = extract_test_file_path(test_name, module_path, file_type, build_system)
         if not expected_test_file:
             logging.warning(f"Could not extract test file path from: {test_name}")
             return False
@@ -423,7 +537,7 @@ def process_repo(row, file_type='java'):
         # Strategy 3: Find matching test file using multiple approaches
         test_file = None
         
-        # Approach 3a: Exact matching
+        # Approach 3a: Exact matching with multi-module awareness
         for file in all_test_files:
             file_path = file.get("filename", "")
             
@@ -434,13 +548,32 @@ def process_repo(row, file_type='java'):
                     match_found = (file_path == expected_test_file or 
                                  file_path.endswith(expected_test_file.split('/')[-1]))
                 else:  # Java
-                    # For Java: check if expected path ends with the actual file path
-                    match_found = expected_test_file.endswith(file_path.split('/')[-1])
+                    # For Java: check multiple matching strategies
+                    file_class_name = file_path.split('/')[-1].replace('.java', '')
+                    expected_class_name = expected_test_file.split('/')[-1].replace('.java', '')
+                    
+                    # Strategy 1: Exact path match
+                    exact_path_match = expected_test_file.endswith(file_path.split('/')[-1])
+                    
+                    # Strategy 2: Class name match (handles different modules)
+                    class_name_match = file_class_name == expected_class_name
+                    
+                    # Strategy 3: Multi-module aware matching (ignore module prefix)
+                    if '/' in expected_test_file and '/' in file_path:
+                        # Extract the src/test/java/... part and compare
+                        expected_suffix = expected_test_file.split('src/test/java/')[-1] if 'src/test/java/' in expected_test_file else expected_test_file
+                        actual_suffix = file_path.split('src/test/java/')[-1] if 'src/test/java/' in file_path else file_path
+                        suffix_match = expected_suffix == actual_suffix
+                    else:
+                        suffix_match = False
+                    
+                    match_found = exact_path_match or class_name_match or suffix_match
                 
                 if match_found:
                     test_file = file
                     commit_sha = file.get('commit_sha', sha)
-                    logging.info(f"✨ Exact match found: {file_path} in commit {commit_sha[:7]}")
+                    match_type = "exact" if file_path == expected_test_file else "cross-module" if file_type == 'java' else "filename"
+                    logging.info(f"✨ {match_type.title()} match found: {file_path} in commit {commit_sha[:7]}")
                     break
         
         # Approach 3b: Handle common typos in CSV data
