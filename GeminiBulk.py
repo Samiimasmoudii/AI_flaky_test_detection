@@ -84,7 +84,7 @@ def main():
     logging.info("Starting bulk processing")
     ensure_directories()
     
-    CSV_PATH = "data/py-data.csv"
+    CSV_PATH = "raw_data_csv/py-data.csv"
     if not os.path.exists(CSV_PATH):
         raise FileNotFoundError(f"CSV file not found: {CSV_PATH}")
     
