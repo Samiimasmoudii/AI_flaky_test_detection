@@ -25,20 +25,104 @@ def read_file_content(file_path: Path) -> str:
         logging.error(f"Error reading file {file_path}: {e}")
         return ""
 
+def detect_available_file_types() -> dict:
+    """Detect available file types (py_data, java_data) and count test cases."""
+    file_types = {}
+    
+    for data_type in ['py_data', 'java_data']:
+        data_dir = RESULTS_DIR / data_type
+        if data_dir.exists():
+            test_count = sum(1 for category_dir in data_dir.iterdir() 
+                           if category_dir.is_dir() 
+                           for test_dir in category_dir.iterdir() 
+                           if test_dir.is_dir())
+            if test_count > 0:
+                file_types[data_type] = test_count
+    
+    return file_types
+
+def choose_file_type() -> str:
+    """Let user choose which file type to analyze."""
+    available_types = detect_available_file_types()
+    
+    if not available_types:
+        print("❌ No test data found in results directory!")
+        return None
+    
+    print("\n" + "="*60)
+    print("FILE TYPE SELECTION FOR ANALYSIS")
+    print("="*60)
+    
+    type_list = list(available_types.keys())
+    for i, (file_type, count) in enumerate(available_types.items(), 1):
+        display_name = file_type.replace('_data', '').upper()
+        print(f"{i}. {display_name} tests ({count:,} available)")
+    
+    print("="*60)
+    
+    while True:
+        try:
+            if len(available_types) == 1:
+                selected = type_list[0]
+                display_name = selected.replace('_data', '').upper()
+                print(f"✅ Auto-selected: {display_name} (only type available)")
+                return selected
+            
+            choice = input(f"Choose file type (1-{len(available_types)}) or 'q' to quit: ").strip()
+            
+            if choice.lower() == 'q':
+                print("Exiting...")
+                return None
+            
+            choice_num = int(choice)
+            if 1 <= choice_num <= len(available_types):
+                return type_list[choice_num - 1]
+            else:
+                print(f"❌ Please enter a number between 1 and {len(available_types)}")
+        
+        except ValueError:
+            print("❌ Please enter a valid number or 'q' to quit")
+        except KeyboardInterrupt:
+            print("\n\nExiting...")
+            return None
+
+def get_test_numbering_info(file_type: str) -> dict:
+    """Get test numbering information based on file type."""
+    if file_type == 'java_data':
+        return {
+            'start_number': 10,
+            'format': '{:02d}',  # Still use 2-digit format: 10, 11, 12
+            'file_ext': '.java',
+            'language': 'Java'
+        }
+    else:  # py_data
+        return {
+            'start_number': 0,
+            'format': '{:02d}',   # 00, 01, 02
+            'file_ext': '.py',
+            'language': 'Python'
+        }
+
 def find_diff_file(model_dir: Path) -> Path:
     """Find the diff file in the model directory, checking for various possible names."""
-    possible_names = ["diff.txt", "diff (1).txt", "diff (2).txt"]
+    possible_names = ["diff.txt", "diff (1).txt", "diff (2).txt", "llm_suggestion.txt"]
     for name in possible_names:
         diff_file = model_dir / name
         if diff_file.exists():
             return diff_file
-    return model_dir / "diff.txt"  # Return default path if none found
+    return model_dir / "llm_suggestion.txt"  # Return default path if none found
 
-def discover_available_models_and_tests(results_dir: Path) -> dict:
-    """Discover all available models and test numbers across all test cases."""
+def discover_available_models_and_tests(results_dir: Path, file_type: str) -> dict:
+    """Discover all available models and test numbers for the selected file type."""
     models_tests = {}
+    data_dir = results_dir / file_type
     
-    for category_dir in results_dir.iterdir():
+    if not data_dir.exists():
+        return models_tests
+    
+    numbering_info = get_test_numbering_info(file_type)
+    
+    for category_dir in data_dir.iterdir():
         if not category_dir.is_dir():
             continue
             
@@ -57,9 +141,17 @@ def discover_available_models_and_tests(results_dir: Path) -> dict:
                     model_name = match.group(1)
                     test_number = match.group(2)
                     
-                    if model_name not in models_tests:
-                        models_tests[model_name] = set()
-                    models_tests[model_name].add(test_number)
+                    # For Java, only include test numbers >= 10
+                    # For Python, only include test numbers < 10
+                    test_num_int = int(test_number)
+                    if file_type == 'java_data' and test_num_int >= 10:
+                        if model_name not in models_tests:
+                            models_tests[model_name] = set()
+                        models_tests[model_name].add(test_number)
+                    elif file_type == 'py_data' and test_num_int < 10:
+                        if model_name not in models_tests:
+                            models_tests[model_name] = set()
+                        models_tests[model_name].add(test_number)
     
     # Convert sets to sorted lists
     for model in models_tests:
@@ -67,16 +159,17 @@ def discover_available_models_and_tests(results_dir: Path) -> dict:
     
     return models_tests
 
-def select_model_and_test() -> tuple:
-    """Let user select which model and test number to analyze."""
-    available = discover_available_models_and_tests(RESULTS_DIR)
+def select_model_and_test(file_type: str) -> tuple:
+    """Let user select which model and test number(s) to analyze."""
+    available = discover_available_models_and_tests(RESULTS_DIR, file_type)
+    numbering_info = get_test_numbering_info(file_type)
     
     if not available:
-        print("No model test results found!")
+        print(f"No model test results found for {file_type}!")
         return None, None
     
-    print("\nAvailable models and their test numbers:")
-    print("=" * 50)
+    print(f"\nAvailable Tested models and their test numbers for {numbering_info['language']}:")
+    print("=" * 60)
     for model, tests in available.items():
         print(f"Model: {model}")
         print(f"  Available tests: {', '.join(tests)}")
@@ -99,53 +192,68 @@ def select_model_and_test() -> tuple:
         except ValueError:
             print("Please enter a valid number.")
     
-    # Select test number
+    # Select test number(s) with option for all tests
     available_tests = available[selected_model]
     print(f"\nAvailable test numbers for {selected_model}: {', '.join(available_tests)}")
+    print("\nTest selection options:")
+    print("1. Select a specific test number")
+    print("2. Select ALL tests for this file type")
     
     while True:
-        test_number = input("Enter test number (e.g., 00, 01, 02): ").strip()
-        if test_number in available_tests:
-            break
-        else:
-            print(f"Test number '{test_number}' not available. Available: {', '.join(available_tests)}")
-    
-    return selected_model, test_number
+        try:
+            selection_choice = int(input("\nChoose selection type (1 or 2): "))
+            if selection_choice == 1:
+                # Original single test selection
+                while True:
+                    test_number = input(f"Enter test number (e.g., {', '.join(available_tests[:3])}): ").strip()
+                    if test_number in available_tests:
+                        return selected_model, [test_number]  # Return as list for consistency
+                    else:
+                        print(f"Test number '{test_number}' not available. Available: {', '.join(available_tests)}")
+            elif selection_choice == 2:
+                # Select all tests
+                print(f"✅ Selected ALL tests for {selected_model}: {', '.join(available_tests)}")
+                return selected_model, list(available_tests)  # Return all tests as list
+            else:
+                print("Please enter 1 or 2.")
+        except ValueError:
+            print("Please enter a valid number (1 or 2).")
 
-def analyze_with_gemini(before_code: str, dev_patch: str, llm_patch: str, model_name: str, test_number: str, category: str) -> dict:
-    """Use Gemini to analyze and compare the fixes."""
+def analyze_with_gemini(before_code: str, dev_patch: str, llm_patch: str, model_name: str, test_number: str, category: str, language: str) -> dict:
+    """Use Gemini to analyze and compare the fixes with simplified criteria."""
     prompt = f"""
-    As an expert in analyzing Python test code and flaky test fixes, analyze how well the LLM's fix matches the developer's solution.
-    The test is categorized as: {category}
+    Compare what the LLM did versus what the developer did to fix this flaky {language} test.
+    
+    Category: {category}
     Model: {model_name}, Test: {test_number}
     
-    Here is the original flaky test code:
-    ```python
-    {before_code}
-    ```
-    
-    Here is the developer's fix (this is the correct solution):
+    Developer's fix:
     ```diff
     {dev_patch}
     ```
     
-    Here is the {model_name}'s proposed fix (Test {test_number}):
+    LLM's fix:
     ```diff
     {llm_patch}
     ```
     
-    Compare the LLM's fix to the developer's solution and rate how well it matches:
+    Compare the two fixes using bullet points:
     
-    1. Result Rating (choose ONE):
-       "X" - The LLM's fix is completely different from the developer's solution or misses the core issue
-       "-" - The LLM's fix partially matches the developer's solution but misses some key aspects
-       "+" - The LLM's fix successfully replicates the developer's solution or achieves the same outcome
+    • What did the developer change?
+    • What did the LLM change?
+    • How similar are they?
     
-    2. Brief Summary (explain how the LLM's fix compares to the developer's solution)
+    Rate the LLM's performance:
+    - SUCCESS: LLM did what the developer did (70%+ similarity in approach/changes)
+    - PARTIAL: LLM did about half the changes the developer made
+    - FAIL: LLM's approach is completely different or misses the main issue
     
     Format your response exactly like this:
-    RATING: [X/-/+]
-    SUMMARY: [Your brief explanation comparing LLM's fix to developer's solution]
+    RATING: [SUCCESS/PARTIAL/FAIL]
+    ANALYSIS:
+    • Developer changed: [brief description]
+    • LLM changed: [brief description]
+    • Similarity: [brief comparison]
     """
     
     try:
@@ -153,26 +261,40 @@ def analyze_with_gemini(before_code: str, dev_patch: str, llm_patch: str, model_
         response = model.generate_content(prompt)
         
         # Parse the response
-        lines = response.text.strip().split('\n')
-        rating = next((line.split(':')[1].strip() for line in lines if line.startswith('RATING:')), 'X')
-        summary = next((line.split(':')[1].strip() for line in lines if line.startswith('SUMMARY:')), 'Analysis failed')
+        text = response.text.strip()
+        lines = text.split('\n')
+        
+        rating = 'FAIL'  # default
+        for line in lines:
+            if line.startswith('RATING:'):
+                rating = line.split(':')[1].strip()
+                break
+        
+        # Extract analysis section
+        analysis_start = text.find('ANALYSIS:')
+        if analysis_start != -1:
+            analysis = text[analysis_start + 9:].strip()
+        else:
+            analysis = 'Analysis not found in response'
         
         return {
             'rating': rating,
-            'summary': summary
+            'analysis': analysis
         }
     except Exception as e:
         logging.error(f"Error calling Gemini API: {e}")
         return {
-            'rating': 'X',
-            'summary': f"Error analyzing fixes: {str(e)}"
+            'rating': 'FAIL',
+            'analysis': f"Error analyzing fixes: {str(e)}"
         }
 
-def save_analysis_results(analyses: list, model_name: str, test_number: str, timestamp: str) -> None:
+def save_analysis_results(analyses: list, model_name: str, test_number: str, timestamp: str, file_type: str) -> None:
     """Save all analyses to a single directory with timestamp."""
     try:
-        # Create analysis directory with timestamp
-        output_dir = ANALYSIS_DIR / f"{model_name}_Test{test_number}_{timestamp}"
+        language = get_test_numbering_info(file_type)['language']
+        
+        # Create analysis directory with timestamp and language
+        output_dir = ANALYSIS_DIR / f"{language}_{model_name}_Test{test_number}_{timestamp}"
         output_dir.mkdir(parents=True, exist_ok=True)
         
         # Create Excel-like summary
@@ -181,19 +303,20 @@ def save_analysis_results(analyses: list, model_name: str, test_number: str, tim
             df_data.append({
                 'Test Case': analysis['test_case'],
                 'Category': analysis['category'],
-                'Dev Fix': analysis['dev_fix_summary'],
+                'Language': language,
+                'Dev Fix Summary': analysis['dev_fix_summary'],
                 f'{model_name}_Test{test_number}': analysis.get('rating', ''),
-                'Summary': analysis['summary']
+                'Analysis': analysis['analysis']
             })
         
         df = pd.DataFrame(df_data)
-        excel_file = output_dir / f"analysis_{model_name}_Test{test_number}_{timestamp}.xlsx"
+        excel_file = output_dir / f"analysis_{language}_{model_name}_Test{test_number}_{timestamp}.xlsx"
         df.to_excel(excel_file, index=False)
         
         # Also save detailed text report
-        text_file = output_dir / f"detailed_analysis_{model_name}_Test{test_number}_{timestamp}.txt"
+        text_file = output_dir / f"detailed_analysis_{language}_{model_name}_Test{test_number}_{timestamp}.txt"
         with open(text_file, 'w', encoding='utf-8') as f:
-            f.write(f"Analysis Report: {model_name} Test {test_number}\n")
+            f.write(f"Analysis Report: {language} - {model_name} Test {test_number}\n")
             f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write("=" * 80 + "\n\n")
             
@@ -202,13 +325,118 @@ def save_analysis_results(analyses: list, model_name: str, test_number: str, tim
                 f.write(f"Category: {analysis['category']}\n")
                 f.write(f"Developer Fix: {analysis['dev_fix_summary']}\n")
                 f.write(f"Rating: {analysis.get('rating', 'N/A')}\n")
-                f.write(f"Summary: {analysis['summary']}\n")
+                f.write(f"Analysis:\n{analysis['analysis']}\n")
                 f.write("-" * 80 + "\n\n")
         
         logging.info(f"Analysis results saved to {output_dir}")
-        print(f"\nResults saved to: {output_dir}")
+        print(f"Results saved to: {output_dir}")
     except Exception as e:
         logging.error(f"Error saving analysis results: {e}")
+
+def save_combined_analysis_results(all_analyses: list, model_name: str, test_numbers: list, timestamp: str, file_type: str) -> None:
+    """Save combined analysis results for all tests to a single directory."""
+    try:
+        language = get_test_numbering_info(file_type)['language']
+        
+        # Create combined analysis directory with timestamp and language
+        test_list = "_".join(test_numbers)
+        output_dir = ANALYSIS_DIR / f"{language}_{model_name}_AllTests_{test_list}_{timestamp}"
+        output_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create Excel-like summary with all tests
+        df_data = []
+        for analysis in all_analyses:
+            df_data.append({
+                'Test Case': analysis['test_case'],
+                'Test Number': analysis['test_number'],
+                'Category': analysis['category'],
+                'Language': language,
+                'Dev Fix Summary': analysis['dev_fix_summary'],
+                f'{model_name}_Rating': analysis.get('rating', ''),
+                'Analysis': analysis['analysis']
+            })
+        
+        df = pd.DataFrame(df_data)
+        excel_file = output_dir / f"combined_analysis_{language}_{model_name}_AllTests_{timestamp}.xlsx"
+        df.to_excel(excel_file, index=False)
+        
+        # Also save detailed text report
+        text_file = output_dir / f"combined_detailed_analysis_{language}_{model_name}_AllTests_{timestamp}.txt"
+        with open(text_file, 'w', encoding='utf-8') as f:
+            f.write(f"Combined Analysis Report: {language} - {model_name} All Tests {', '.join(test_numbers)}\n")
+            f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write("=" * 80 + "\n\n")
+            
+            # Group by test number for better organization
+            analyses_by_test = {}
+            for analysis in all_analyses:
+                test_num = analysis['test_number']
+                if test_num not in analyses_by_test:
+                    analyses_by_test[test_num] = []
+                analyses_by_test[test_num].append(analysis)
+            
+            for test_num in sorted(analyses_by_test.keys()):
+                f.write(f"TEST {test_num} RESULTS\n")
+                f.write("=" * 40 + "\n\n")
+                
+                for analysis in analyses_by_test[test_num]:
+                    f.write(f"Test Case: {analysis['test_case']}\n")
+                    f.write(f"Category: {analysis['category']}\n")
+                    f.write(f"Developer Fix: {analysis['dev_fix_summary']}\n")
+                    f.write(f"Rating: {analysis.get('rating', 'N/A')}\n")
+                    f.write(f"Analysis:\n{analysis['analysis']}\n")
+                    f.write("-" * 40 + "\n\n")
+                
+                f.write("\n")
+        
+        logging.info(f"Combined analysis results saved to {output_dir}")
+        print(f"\nCombined results saved to: {output_dir}")
+    except Exception as e:
+        logging.error(f"Error saving combined analysis results: {e}")
+
+def choose_excel_filtering() -> bool:
+    """Let user choose whether to use Excel file filtering or process all test cases."""
+    excel_path = Path("Manual_Comparison.xlsx")
+    
+    if not excel_path.exists():
+        print("📄 No Manual_Comparison.xlsx file found - will process all available test cases.")
+        return False
+    
+    print("\n" + "="*60)
+    print("EXCEL FILE FILTERING OPTIONS")
+    print("="*60)
+    print(f"📄 Found Excel file: {excel_path}")
+    
+    # Try to read and show info about the Excel file
+    try:
+        df = pd.read_excel(excel_path)
+        test_case_count = len(df.iloc[:, 0].dropna())
+        print(f"📊 Excel file contains {test_case_count} test cases")
+    except Exception as e:
+        print(f"⚠️  Could not read Excel file: {e}")
+        print("Will proceed with option to process all test cases.")
+    
+    print("\nFiltering options:")
+    print("1. Use Excel file filtering (only process test cases listed in Excel)")
+    print("2. Process ALL available test cases (ignore Excel file)")
+    print("="*60)
+    
+    while True:
+        try:
+            choice = input("Choose filtering option (1 or 2): ").strip()
+            
+            if choice == '1':
+                print("✅ Using Excel file filtering")
+                return True
+            elif choice == '2':
+                print("✅ Processing ALL available test cases")
+                return False
+            else:
+                print("❌ Please enter 1 or 2")
+        
+        except KeyboardInterrupt:
+            print("\n\nExiting...")
+            return False
 
 def main():
     # Initialize logging
@@ -227,111 +455,202 @@ def main():
         # Configure Gemini
         genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
         
-        # Read the Excel file
-        excel_path = Path("Manual_Comparison.xlsx")
-        if not excel_path.exists():
-            raise FileNotFoundError(f"Manual comparison file not found: {excel_path}")
+        # Choose file type first
+        selected_file_type = choose_file_type()
+        if not selected_file_type:
+            return
         
-        df = pd.read_excel(excel_path)
-        test_cases = set(df.iloc[:, 0].dropna().astype(str).tolist())
-        logging.info(f"Found {len(test_cases)} test cases to analyze")
+        numbering_info = get_test_numbering_info(selected_file_type)
+        language = numbering_info['language']
+        file_ext = numbering_info['file_ext']
         
-        # Let user select model and test number once
-        selected_model, selected_test = select_model_and_test()
-        if not selected_model or not selected_test:
+        print(f"\n🔍 Analyzing {language} tests")
+        print(f"📁 Looking in: {RESULTS_DIR / selected_file_type}")
+        
+        # Choose whether to use Excel filtering
+        use_excel_filtering = choose_excel_filtering()
+        
+        # Read the Excel file only if user chose to use filtering
+        test_cases = set()
+        if use_excel_filtering:
+            excel_path = Path("Manual_Comparison.xlsx")
+            if excel_path.exists():
+                try:
+                    df = pd.read_excel(excel_path)
+                    test_cases = set(df.iloc[:, 0].dropna().astype(str).tolist())
+                    logging.info(f"Using Excel filtering with {len(test_cases)} test cases")
+                    print(f"📊 Will filter to {len(test_cases)} test cases from Excel file")
+                except Exception as e:
+                    logging.error(f"Error reading Excel file: {e}")
+                    print(f"⚠️  Error reading Excel file: {e}")
+                    print("Proceeding without Excel filtering...")
+                    test_cases = set()
+            else:
+                print("⚠️  Excel file not found - proceeding without filtering")
+                test_cases = set()
+        else:
+            print("📊 Processing ALL available test cases (no Excel filtering)")
+        
+        # Let user select model and test number
+        selected_model, selected_tests = select_model_and_test(selected_file_type)
+        if not selected_model or not selected_tests:
             print("No valid selection made. Exiting.")
             return
         
-        print(f"\nAnalyzing: {selected_model} Test {selected_test}")
-        print("=" * 50)
+        print(f"\n🔍 Analyzing: {language} - {selected_model} Test(s) {', '.join(selected_tests)}")
+        print("=" * 60)
         
-        # Collect all files that will be processed
-        logging.info("\nCollecting files to process...")
-        files_to_process = []
-        for category_dir in RESULTS_DIR.iterdir():
-            if not category_dir.is_dir():
+        # Process each selected test
+        all_analyses = []
+        all_files_processed = 0
+        
+        for selected_test in selected_tests:
+            print(f"\n{'='*80}")
+            print(f"🔍 PROCESSING: {language} - {selected_model} Test {selected_test}")
+            print(f"{'='*80}")
+            
+            # Collect all files that will be processed for this test
+            logging.info(f"\nCollecting files to process for Test {selected_test}...")
+            files_to_process = []
+            data_dir = RESULTS_DIR / selected_file_type
+            
+            print(f"🔍 Scanning directory: {data_dir}")
+            
+            for category_dir in data_dir.iterdir():
+                if not category_dir.is_dir():
+                    continue
+                    
+                print(f"  📁 Category: {category_dir.name}")
+                    
+                for test_case_dir in category_dir.iterdir():
+                    if not test_case_dir.is_dir():
+                        continue
+                    
+                    print(f"    📂 Test case: {test_case_dir.name}")
+                    
+                    # If we have Excel file filtering enabled, filter by test cases in it
+                    if use_excel_filtering and test_cases and test_case_dir.name not in test_cases:
+                        print(f"      ⏭️  Skipping (not in Excel filter)")
+                        continue
+                    elif use_excel_filtering and test_cases:
+                        print(f"      ✅ Included (in Excel filter)")
+                    elif not use_excel_filtering:
+                        print(f"      ✅ Included (no Excel filtering)")
+                    else:
+                        print(f"      ✅ Included (Excel filtering disabled or empty)")
+                    
+                    before_file = test_case_dir / f"before{file_ext}"
+                    dev_patch_file = test_case_dir / "developer_patch.diff"
+                    
+                    print(f"      🔍 Looking for:")
+                    print(f"        📄 before file: {before_file}")
+                    print(f"        📄 dev patch: {dev_patch_file}")
+                    print(f"        📄 before exists: {before_file.exists()}")
+                    print(f"        📄 dev patch exists: {dev_patch_file.exists()}")
+                    
+                    # Look for the specific model and test combination
+                    target_folder = f"{selected_model}_Test{selected_test}"
+                    model_test_dir = test_case_dir / target_folder
+                    
+                    print(f"        📁 model dir: {model_test_dir}")
+                    print(f"        📁 model dir exists: {model_test_dir.exists()}")
+                    
+                    if before_file.exists() and dev_patch_file.exists() and model_test_dir.exists():
+                        print(f"        ✅ MATCH! Adding to processing list")
+                        files_to_process.append({
+                            'category': category_dir.name,
+                            'test_case': test_case_dir.name,
+                            'path': test_case_dir,
+                            'model_dir': model_test_dir,
+                            'test_number': selected_test
+                        })
+                    else:
+                        print(f"        ❌ SKIP: Missing required files/dirs")
+
+            print(f"\n📊 Found {len(files_to_process)} {language} test cases with {selected_model} Test {selected_test}")
+            all_files_processed += len(files_to_process)
+            
+            if not files_to_process:
+                print(f"No matching test cases found for Test {selected_test}!")
                 continue
+            
+            # Process the files and collect analyses for this test
+            logging.info(f"\nStarting analysis for Test {selected_test}...")
+            test_analyses = []
+            
+            for idx, file_info in enumerate(files_to_process, 1):
+                print(f"\nProcessing {idx}/{len(files_to_process)}: {file_info['test_case']} (Test {selected_test})")
+                logging.info(f"Analyzing {file_info['test_case']} for Test {selected_test}")
                 
-            for test_case_dir in category_dir.iterdir():
-                if not test_case_dir.is_dir() or test_case_dir.name not in test_cases:
+                test_dir = file_info['path']
+                before_code = read_file_content(test_dir / f"before{file_ext}")
+                dev_patch = read_file_content(test_dir / "developer_patch.diff")
+                
+                # Read LLM patch
+                llm_patch_file = find_diff_file(file_info['model_dir'])
+                llm_patch = read_file_content(llm_patch_file)
+                
+                if not llm_patch:
+                    logging.warning(f"No LLM patch found for {file_info['test_case']} Test {selected_test}")
                     continue
                 
-                before_file = test_case_dir / "before.py"
-                dev_patch_file = test_case_dir / "developer_patch.diff"
+                # Analyze with Gemini
+                result = analyze_with_gemini(before_code, dev_patch, llm_patch, 
+                                           selected_model, selected_test, 
+                                           file_info['category'], language)
                 
-                # Look for the specific model and test combination
-                target_folder = f"{selected_model}_Test{selected_test}"
-                model_test_dir = test_case_dir / target_folder
+                analysis = {
+                    'category': file_info['category'],
+                    'test_case': file_info['test_case'],
+                    'test_number': selected_test,
+                    'dev_fix_summary': dev_patch.split('\n')[0] if dev_patch else "No developer fix found",
+                    'rating': result['rating'],
+                    'analysis': result['analysis']
+                }
                 
-                if before_file.exists() and dev_patch_file.exists() and model_test_dir.exists():
-                    files_to_process.append({
-                        'category': category_dir.name,
-                        'test_case': test_case_dir.name,
-                        'path': test_case_dir,
-                        'model_dir': model_test_dir
-                    })
-
-        print(f"\nFound {len(files_to_process)} test cases with {selected_model} Test {selected_test}")
-        
-        if not files_to_process:
-            print("No matching test cases found!")
-            return
-        
-        # Process the files and collect analyses
-        logging.info("\nStarting analysis...")
-        analyses = []
-        
-        for idx, file_info in enumerate(files_to_process, 1):
-            print(f"\nProcessing {idx}/{len(files_to_process)}: {file_info['test_case']}")
-            logging.info(f"Analyzing {file_info['test_case']}")
+                test_analyses.append(analysis)
+                all_analyses.append(analysis)
+                print(f"  Result: {result['rating']}")
             
-            test_dir = file_info['path']
-            before_code = read_file_content(test_dir / "before.py")
-            dev_patch = read_file_content(test_dir / "developer_patch.diff")
+            # Save analyses for this specific test
+            save_analysis_results(test_analyses, selected_model, selected_test, timestamp, selected_file_type)
             
-            # Read LLM patch
-            llm_patch_file = find_diff_file(file_info['model_dir'])
-            llm_patch = read_file_content(llm_patch_file)
+            # Print summary for this test
+            total_test = len(test_analyses)
+            success_count_test = sum(1 for a in test_analyses if a['rating'] == 'SUCCESS')
+            partial_count_test = sum(1 for a in test_analyses if a['rating'] == 'PARTIAL')
+            fail_count_test = sum(1 for a in test_analyses if a['rating'] == 'FAIL')
             
-            if not llm_patch:
-                logging.warning(f"No LLM patch found for {file_info['test_case']}")
-                continue
-            
-            # Analyze with Gemini
-            result = analyze_with_gemini(before_code, dev_patch, llm_patch, 
-                                       selected_model, selected_test, 
-                                       file_info['category'])
-            
-            analysis = {
-                'category': file_info['category'],
-                'test_case': file_info['test_case'],
-                'dev_fix_summary': dev_patch.split('\n')[0] if dev_patch else "No developer fix found",
-                'rating': result['rating'],
-                'summary': result['summary']
-            }
-            
-            analyses.append(analysis)
-            print(f"  Result: {result['rating']} - {result['summary'][:50]}...")
+            print(f"\n" + "-" * 60)
+            print(f"SUMMARY for {language} - {selected_model} Test {selected_test}")
+            print(f"-" * 60)
+            print(f"Test cases: {total_test}")
+            print(f"✅ SUCCESS: {success_count_test} ({success_count_test/total_test*100:.1f}%)")
+            print(f"⚠️  PARTIAL: {partial_count_test} ({partial_count_test/total_test*100:.1f}%)")
+            print(f"❌ FAIL: {fail_count_test} ({fail_count_test/total_test*100:.1f}%)")
         
-        # Save all analyses
-        save_analysis_results(analyses, selected_model, selected_test, timestamp)
+        # Print overall summary for all tests
+        if len(selected_tests) > 1:
+            total_overall = len(all_analyses)
+            success_count_overall = sum(1 for a in all_analyses if a['rating'] == 'SUCCESS')
+            partial_count_overall = sum(1 for a in all_analyses if a['rating'] == 'PARTIAL')
+            fail_count_overall = sum(1 for a in all_analyses if a['rating'] == 'FAIL')
+            
+            print(f"\n" + "=" * 80)
+            print(f"OVERALL SUMMARY for {language} - {selected_model} All Tests {', '.join(selected_tests)}")
+            print(f"=" * 80)
+            print(f"Total test cases processed: {total_overall}")
+            print(f"Total files processed: {all_files_processed}")
+            if total_overall > 0:
+                print(f"✅ SUCCESS: {success_count_overall} ({success_count_overall/total_overall*100:.1f}%)")
+                print(f"⚠️  PARTIAL: {partial_count_overall} ({partial_count_overall/total_overall*100:.1f}%)")
+                print(f"❌ FAIL: {fail_count_overall} ({fail_count_overall/total_overall*100:.1f}%)")
         
-        # Print summary
-        total = len(analyses)
-        plus_count = sum(1 for a in analyses if a['rating'] == '+')
-        minus_count = sum(1 for a in analyses if a['rating'] == '-')
-        x_count = sum(1 for a in analyses if a['rating'] == 'X')
-        
-        print(f"\n" + "=" * 50)
-        print(f"ANALYSIS SUMMARY for {selected_model} Test {selected_test}")
-        print(f"=" * 50)
-        print(f"Total test cases: {total}")
-        print(f"Successful (+): {plus_count} ({plus_count/total*100:.1f}%)")
-        print(f"Partial (-): {minus_count} ({minus_count/total*100:.1f}%)")
-        print(f"Failed (X): {x_count} ({x_count/total*100:.1f}%)")
-        
-        logging.info("\nAnalysis completed")
+        logging.info(f"\nAnalysis completed for all {len(selected_tests)} tests")
         logging.info("=" * 80)
+        
+        # Save combined analysis results for all tests
+        save_combined_analysis_results(all_analyses, selected_model, selected_tests, timestamp, selected_file_type)
         
     except Exception as e:
         logging.error(f"Fatal error: {str(e)}")
