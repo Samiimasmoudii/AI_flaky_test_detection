@@ -8,3 +8,6 @@ dotenv
 pandas
 openpyxl
 openai
+codebleu
+tree-sitter-python=0.21.0
+tree-sitter-java=0.21.0

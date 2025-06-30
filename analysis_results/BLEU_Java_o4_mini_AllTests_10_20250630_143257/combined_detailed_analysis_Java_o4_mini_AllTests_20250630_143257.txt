@@ -1,0 +1,1100 @@
+Combined Analysis Report: Java - o4_mini All Tests 10
+Generated: 2025-06-30 14:33:10
+================================================================================
+
+TEST 10 RESULTS
+========================================
+
+Test Case: com_amazon_pay_api_GenerateButtonSignatureTest_testButtonSignatureWithJSONObject
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1842
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.0000
+• DataFlow Match: 0.7368
+----------------------------------------
+
+Test Case: com_amazon_pay_api_UtilTest_testEnhanceResponseWithShippingAddressList
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1848
+• BLEU (n-gram): 0.0083
+• BLEU-weighted: 0.0168
+• AST Match: 0.3571
+• DataFlow Match: 0.3571
+----------------------------------------
+
+Test Case: com_braintreegateway_unittest_ThreeDSecureLookupRequestTest_serializesPriorAuthenticationDetails
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0782
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0005
+• AST Match: 0.2109
+• DataFlow Match: 0.1014
+----------------------------------------
+
+Test Case: com_cedarsoftware_io_CollectionTests_testEnumsInsideOfACollection_whenWritingAsObject_withPrivateMembersIncluded
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1525
+• BLEU (n-gram): 0.0366
+• BLEU-weighted: 0.0689
+• AST Match: 0.1622
+• DataFlow Match: 0.3425
+----------------------------------------
+
+Test Case: com_cedarsoftware_io_MapsTest_testMap
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2531
+• BLEU (n-gram): 0.0063
+• BLEU-weighted: 0.0063
+• AST Match: 0.0000
+• DataFlow Match: 0.0000
+----------------------------------------
+
+Test Case: com_cedarsoftware_io_PrettyPrintTest_testPrettyPrint
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2717
+• BLEU (n-gram): 0.1363
+• BLEU-weighted: 0.1492
+• AST Match: 0.2237
+• DataFlow Match: 0.5778
+----------------------------------------
+
+Test Case: com_fasterxml_jackson_databind_jsontype_ExistingPropertyTest_testExistingPropertySerializationFruits
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4751
+• BLEU (n-gram): 0.0128
+• BLEU-weighted: 0.2627
+• AST Match: 0.7500
+• DataFlow Match: 0.8750
+----------------------------------------
+
+Test Case: com_fasterxml_jackson_databind_objectid_TestObjectIdWithEquals_testSimpleEquals
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1255
+• BLEU (n-gram): 0.0662
+• BLEU-weighted: 0.0811
+• AST Match: 0.1463
+• DataFlow Match: 0.2083
+----------------------------------------
+
+Test Case: com_graphhopper_isochrone_algorithm_ShortestPathTreeTest_testSearch60Seconds
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0645
+• BLEU (n-gram): 0.0006
+• BLEU-weighted: 0.0025
+• AST Match: 0.0465
+• DataFlow Match: 0.2083
+----------------------------------------
+
+Test Case: com_hellokaton_blade_BladeTest_testAddStatics
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2924
+• BLEU (n-gram): 0.1948
+• BLEU-weighted: 0.2595
+• AST Match: 0.3363
+• DataFlow Match: 0.3788
+----------------------------------------
+
+Test Case: com_networknt_header_HeaderHandlerTest_testMarketHeader
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2120
+• BLEU (n-gram): 0.0078
+• BLEU-weighted: 0.0607
+• AST Match: 0.6798
+• DataFlow Match: 0.0997
+----------------------------------------
+
+Test Case: com_networknt_header_HeaderHandlerTest_testPetstoreHeader
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2008
+• BLEU (n-gram): 0.0008
+• BLEU-weighted: 0.0554
+• AST Match: 0.6798
+• DataFlow Match: 0.0674
+----------------------------------------
+
+Test Case: com_twilio_jwt_taskrouter_PolicyTest_testToJson
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3333
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.3333
+• DataFlow Match: 0.0000
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumConstantsExtensionTest_basicTest
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0957
+• BLEU (n-gram): 0.0039
+• BLEU-weighted: 0.0034
+• AST Match: 0.2000
+• DataFlow Match: 0.1754
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumConstantsExtensionTest_testSorting
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1636
+• BLEU (n-gram): 0.0118
+• BLEU-weighted: 0.0518
+• AST Match: 0.3100
+• DataFlow Match: 0.2807
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumAsEnum
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0657
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.0700
+• DataFlow Match: 0.1930
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumAsInlineUnion
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2807
+• BLEU (n-gram): 0.0998
+• BLEU-weighted: 0.3274
+• AST Match: 0.4500
+• DataFlow Match: 0.2456
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumAsNumberBasedEnum
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1252
+• BLEU (n-gram): 0.0034
+• BLEU-weighted: 0.0041
+• AST Match: 0.2300
+• DataFlow Match: 0.2632
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumAsUnion
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3324
+• BLEU (n-gram): 0.0666
+• BLEU-weighted: 0.3015
+• AST Match: 0.4000
+• DataFlow Match: 0.5614
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumMapKeys_asInlineUnion
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4810
+• BLEU (n-gram): 0.0725
+• BLEU-weighted: 0.5278
+• AST Match: 0.8500
+• DataFlow Match: 0.4737
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumUsingToString
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2824
+• BLEU (n-gram): 0.2191
+• BLEU-weighted: 0.2298
+• AST Match: 0.4000
+• DataFlow Match: 0.2807
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumWithJsonPropertyAnnotations
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0657
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.0700
+• DataFlow Match: 0.1930
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumWithJsonValueFieldAnnotation
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4546
+• BLEU (n-gram): 0.1045
+• BLEU-weighted: 0.5052
+• AST Match: 0.7700
+• DataFlow Match: 0.4386
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testEnumWithJsonValueMethodAnnotation
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0672
+• BLEU (n-gram): 0.0031
+• BLEU-weighted: 0.0027
+• AST Match: 0.0700
+• DataFlow Match: 0.1930
+----------------------------------------
+
+Test Case: cz_habarta_typescript_generator_EnumTest_testSingleEnum
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1720
+• BLEU (n-gram): 0.0038
+• BLEU-weighted: 0.0081
+• AST Match: 0.2200
+• DataFlow Match: 0.4561
+----------------------------------------
+
+Test Case: dev_miku_r2dbc_mysql_codec_SetCodecTest_binarySet
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2115
+• BLEU (n-gram): 0.1142
+• BLEU-weighted: 0.1283
+• AST Match: 0.3388
+• DataFlow Match: 0.2647
+----------------------------------------
+
+Test Case: dev_miku_r2dbc_mysql_codec_SetCodecTest_stringifySet
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3565
+• BLEU (n-gram): 0.1244
+• BLEU-weighted: 0.2421
+• AST Match: 0.4711
+• DataFlow Match: 0.5882
+----------------------------------------
+
+Test Case: io_prometheus_client_dropwizard_samplebuilder_CustomMappingSampleBuilderTest_test_WHEN_MoreToFormatInLabelsAndName_THEN_ShouldReturnCorrectSample
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2189
+• BLEU (n-gram): 0.0080
+• BLEU-weighted: 0.0151
+• AST Match: 0.1774
+• DataFlow Match: 0.6750
+----------------------------------------
+
+Test Case: org_apache_bookkeeper_slogger_SloggerTest_testMap
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1649
+• BLEU (n-gram): 0.0049
+• BLEU-weighted: 0.0089
+• AST Match: 0.2979
+• DataFlow Match: 0.3478
+----------------------------------------
+
+Test Case: org_apache_druid_discovery_BaseNodeRoleWatcherTest_testGeneralUseSimulation
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2643
+• BLEU (n-gram): 0.0055
+• BLEU-weighted: 0.0404
+• AST Match: 0.1364
+• DataFlow Match: 0.8750
+----------------------------------------
+
+Test Case: org_apache_ignite_internal_storage_rocksdb_RocksDbMvPartitionStorageTest_commitAndAbortWriteNoOpIfNoUncommittedVersionExists
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1250
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1000
+• DataFlow Match: 0.4000
+----------------------------------------
+
+Test Case: org_apache_servicecomb_service_center_client_ServiceCenterClientTest_TestRegisterServiceInstance
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1171
+• BLEU (n-gram): 0.0043
+• BLEU-weighted: 0.0098
+• AST Match: 0.2376
+• DataFlow Match: 0.2169
+----------------------------------------
+
+Test Case: org_apache_servicecomb_service_center_client_ServiceCenterClientTest_TestRegistryService
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1181
+• BLEU (n-gram): 0.0055
+• BLEU-weighted: 0.0125
+• AST Match: 0.2376
+• DataFlow Match: 0.2169
+----------------------------------------
+
+Test Case: org_apache_servicecomb_service_center_client_ServiceCenterClientTest_TestSendHeartBeats
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1300
+• BLEU (n-gram): 0.0070
+• BLEU-weighted: 0.0101
+• AST Match: 0.2376
+• DataFlow Match: 0.2651
+----------------------------------------
+
+Test Case: org_apache_shardingsphere_shardingjdbc_jdbc_core_statement_EncryptPreparedStatementTest_assertDeleteWithExecute
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3050
+• BLEU (n-gram): 0.0512
+• BLEU-weighted: 0.0918
+• AST Match: 0.3333
+• DataFlow Match: 0.7436
+----------------------------------------
+
+Test Case: org_apache_shardingsphere_shardingjdbc_jdbc_core_statement_EncryptPreparedStatementTest_assertInsertWithBatchExecute
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1689
+• BLEU (n-gram): 0.0031
+• BLEU-weighted: 0.0027
+• AST Match: 0.1569
+• DataFlow Match: 0.5128
+----------------------------------------
+
+Test Case: org_apache_shardingsphere_shardingjdbc_jdbc_core_statement_EncryptPreparedStatementTest_assertInsertWithExecute
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0834
+• BLEU (n-gram): 0.0029
+• BLEU-weighted: 0.0032
+• AST Match: 0.0196
+• DataFlow Match: 0.3077
+----------------------------------------
+
+Test Case: org_apache_shardingsphere_shardingjdbc_jdbc_core_statement_EncryptPreparedStatementTest_assertInsertWithExecuteWithGeneratedKey
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2744
+• BLEU (n-gram): 0.0658
+• BLEU-weighted: 0.0809
+• AST Match: 0.2843
+• DataFlow Match: 0.6667
+----------------------------------------
+
+Test Case: org_apache_shardingsphere_shardingjdbc_jdbc_core_statement_EncryptPreparedStatementTest_assertUpdateWithExecuteUpdate
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1688
+• BLEU (n-gram): 0.0029
+• BLEU-weighted: 0.0025
+• AST Match: 0.1569
+• DataFlow Match: 0.5128
+----------------------------------------
+
+Test Case: org_apache_sling_servlets_get_impl_helpers_JsonRendererTest_testBooleansNoTidy
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3483
+• BLEU (n-gram): 0.0116
+• BLEU-weighted: 0.0139
+• AST Match: 0.4390
+• DataFlow Match: 0.9286
+----------------------------------------
+
+Test Case: org_apache_sling_servlets_get_impl_helpers_JsonRendererTest_testBooleansWithTidy
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4802
+• BLEU (n-gram): 0.0618
+• BLEU-weighted: 0.2962
+• AST Match: 0.6341
+• DataFlow Match: 0.9286
+----------------------------------------
+
+Test Case: org_apache_tinkerpop_gremlin_process_traversal_translator_ParameterizedGroovyTranslatorTest_shouldHandleSet
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4671
+• BLEU (n-gram): 0.3931
+• BLEU-weighted: 0.4323
+• AST Match: 0.7030
+• DataFlow Match: 0.3400
+----------------------------------------
+
+Test Case: org_apache_tinkerpop_gremlin_util_iterator_IteratorUtilsTest_shouldConvertMapToIterator
+Category: ID
+Developer Fix: --- before.java
+Rating: SUCCESS
+Analysis:
+CodeBLEU Score: 0.7661
+• BLEU (n-gram): 0.7111
+• BLEU-weighted: 0.7051
+• AST Match: 0.9512
+• DataFlow Match: 0.6970
+----------------------------------------
+
+Test Case: org_apache_tinkerpop_gremlin_util_iterator_IteratorUtilsTest_shouldConvertMapToList
+Category: ID
+Developer Fix: --- before.java
+Rating: SUCCESS
+Analysis:
+CodeBLEU Score: 0.7661
+• BLEU (n-gram): 0.7111
+• BLEU-weighted: 0.7051
+• AST Match: 0.9512
+• DataFlow Match: 0.6970
+----------------------------------------
+
+Test Case: org_biojava_nbio_structure_test_symmetry_TestQuatSymmetryDetectorExamples_testLocal
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2107
+• BLEU (n-gram): 0.0054
+• BLEU-weighted: 0.0160
+• AST Match: 0.4881
+• DataFlow Match: 0.3333
+----------------------------------------
+
+Test Case: org_kohsuke_github_GHObjectTest_test_toString
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.5253
+• BLEU (n-gram): 0.4267
+• BLEU-weighted: 0.5578
+• AST Match: 0.6937
+• DataFlow Match: 0.4231
+----------------------------------------
+
+Test Case: org_nanohttpd_junit_protocols_http_HttpSessionHeadersTest_testMultipartFormData
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4882
+• BLEU (n-gram): 0.2189
+• BLEU-weighted: 0.6814
+• AST Match: 0.5263
+• DataFlow Match: 0.5263
+----------------------------------------
+
+Test Case: org_nanohttpd_junit_protocols_http_HttpSessionTest_testMultipartFormData
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1711
+• BLEU (n-gram): 0.0054
+• BLEU-weighted: 0.0125
+• AST Match: 0.0000
+• DataFlow Match: 0.6667
+----------------------------------------
+
+Test Case: org_openx_data_jsonserde_JsonSerDeTest_testExplicitNullValue
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3063
+• BLEU (n-gram): 0.0227
+• BLEU-weighted: 0.0344
+• AST Match: 0.3902
+• DataFlow Match: 0.7778
+----------------------------------------
+
+Test Case: org_openx_data_jsonserde_JsonSerDeTest_testNestedExplicitNullValue
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2444
+• BLEU (n-gram): 0.0218
+• BLEU-weighted: 0.0344
+• AST Match: 0.3659
+• DataFlow Match: 0.5556
+----------------------------------------
+
+Test Case: org_springframework_data_cassandra_core_query_ColumnsUnitTests_shouldCreateFromColumns
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3619
+• BLEU (n-gram): 0.1738
+• BLEU-weighted: 0.2073
+• AST Match: 0.6000
+• DataFlow Match: 0.4667
+----------------------------------------
+
+Test Case: org_springframework_data_cassandra_core_query_CriteriaUnitTests_shouldCreateIsInSet
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2116
+• BLEU (n-gram): 0.1791
+• BLEU-weighted: 0.2449
+• AST Match: 0.2000
+• DataFlow Match: 0.2222
+----------------------------------------
+
+Test Case: org_springframework_data_cassandra_repository_query_PartTreeCassandraQueryUnitTests_usesProjectionQueryHiddenField
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1398
+• BLEU (n-gram): 0.0040
+• BLEU-weighted: 0.0040
+• AST Match: 0.2625
+• DataFlow Match: 0.2889
+----------------------------------------
+
+Test Case: org_springframework_data_cassandra_repository_query_ReactivePartTreeCassandraQueryUnitTests_usesDynamicProjection
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3057
+• BLEU (n-gram): 0.1862
+• BLEU-weighted: 0.2838
+• AST Match: 0.3750
+• DataFlow Match: 0.3778
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_config_RepositoryRestMvConfigurationIntegrationTests_
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3351
+• BLEU (n-gram): 0.1025
+• BLEU-weighted: 0.1389
+• AST Match: 0.6892
+• DataFlow Match: 0.4100
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_detectsAnnotationsOnProxies
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2126
+• BLEU (n-gram): 0.0267
+• BLEU-weighted: 0.0607
+• AST Match: 0.4932
+• DataFlow Match: 0.2700
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_exposesEffectiveRepositoryLookupPathAsRequestAttribute
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1404
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.4400
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_handlesCorsPreflightRequestsProperly
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0954
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.2600
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_looksUpRepositoryEntityControllerMethodCorrectly
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1179
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.3500
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_refrainsFromMappingWhenUrisDontMatch
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1179
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.3500
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_rejectsNullConfiguration
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1877
+• BLEU (n-gram): 0.0819
+• BLEU-weighted: 0.0729
+• AST Match: 0.2162
+• DataFlow Match: 0.3800
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_rejectsNullMappings
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.0954
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.2600
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_rejectsUnexpandedUriTemplateWithNotFound
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1923
+• BLEU (n-gram): 0.0596
+• BLEU-weighted: 0.0599
+• AST Match: 0.2095
+• DataFlow Match: 0.4400
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_resolvesCorsConfigurationFromRequestUri
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1179
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.3500
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_returnsNullForUriNotMapped
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1725
+• BLEU (n-gram): 0.0715
+• BLEU-weighted: 0.0599
+• AST Match: 0.1486
+• DataFlow Match: 0.4100
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_returnsRepositoryHandlerMethodForAbsoluteBaseUri
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1179
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.3500
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_returnsRepositoryHandlerMethodWithBaseUriConfigured
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1404
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.4400
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_returnsRootHandlerMethodWithBaseUriConfigured
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1939
+• BLEU (n-gram): 0.0664
+• BLEU-weighted: 0.0599
+• AST Match: 0.2095
+• DataFlow Match: 0.4400
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_stripsBaseUriForCorsConfigurationResolution
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2478
+• BLEU (n-gram): 0.1248
+• BLEU-weighted: 0.1030
+• AST Match: 0.2635
+• DataFlow Match: 0.5000
+----------------------------------------
+
+Test Case: org_springframework_data_rest_webmvc_RepositoryRestHandlerMappingUnitTests_twoArgumentConstructorDoesNotThrowException
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1179
+• BLEU (n-gram): 0.0000
+• BLEU-weighted: 0.0000
+• AST Match: 0.1216
+• DataFlow Match: 0.3500
+----------------------------------------
+
+Test Case: org_wildfly_extension_undertow_UndertowSubsystem100TestCase_testRuntime
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1722
+• BLEU (n-gram): 0.0055
+• BLEU-weighted: 0.0065
+• AST Match: 0.1618
+• DataFlow Match: 0.5152
+----------------------------------------
+
+Test Case: org_wildfly_extension_undertow_UndertowSubsystem110TestCase_testRuntime
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1531
+• BLEU (n-gram): 0.0053
+• BLEU-weighted: 0.0056
+• AST Match: 0.1471
+• DataFlow Match: 0.4545
+----------------------------------------
+
+Test Case: org_wildfly_extension_undertow_UndertowSubsystem70TestCase_testRuntime
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2559
+• BLEU (n-gram): 0.0057
+• BLEU-weighted: 0.0180
+• AST Match: 0.0000
+• DataFlow Match: 0.0000
+----------------------------------------
+
+Test Case: org_wildfly_extension_undertow_UndertowSubsystem80TestCase_testRuntime
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1299
+• BLEU (n-gram): 0.0037
+• BLEU-weighted: 0.0053
+• AST Match: 0.1471
+• DataFlow Match: 0.3636
+----------------------------------------
+
+Test Case: org_wildfly_extension_undertow_UndertowSubsystem90TestCase_testRuntime
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1143
+• BLEU (n-gram): 0.0016
+• BLEU-weighted: 0.0046
+• AST Match: 0.1176
+• DataFlow Match: 0.3333
+----------------------------------------
+
+Test Case: rg_apache_cloudstack_api_command_test_ResetVMUserDataCmdTest_testUserdataDetails
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4866
+• BLEU (n-gram): 0.0637
+• BLEU-weighted: 0.5254
+• AST Match: 0.8571
+• DataFlow Match: 0.5000
+----------------------------------------
+
+Test Case: spoon_support_visitor_java_JavaReflectionTreeBuilderTest_testPurelyReflectiveInnerClass
+Category: ID
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4203
+• BLEU (n-gram): 0.0153
+• BLEU-weighted: 0.4280
+• AST Match: 0.5319
+• DataFlow Match: 0.7059
+----------------------------------------
+
+Test Case: spoon_test_comment_CommentTest_testAnnotationTypeComment
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1040
+• BLEU (n-gram): 0.0027
+• BLEU-weighted: 0.0050
+• AST Match: 0.2252
+• DataFlow Match: 0.1831
+----------------------------------------
+
+Test Case: spoon_test_compilation_CompilationTest_testModuleResolution
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1805
+• BLEU (n-gram): 0.0042
+• BLEU-weighted: 0.0049
+• AST Match: 0.5391
+• DataFlow Match: 0.1739
+----------------------------------------
+
+Test Case: spoon_test_template_SubstitutionTest_testCreateTypeFromTemplate
+Category: ID
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2423
+• BLEU (n-gram): 0.0040
+• BLEU-weighted: 0.0156
+• AST Match: 0.4020
+• DataFlow Match: 0.5476
+----------------------------------------
+
+Test Case: com_alibaba_csp_sentinel_TracerTest_setExceptionsToIgnore
+Category: OD
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3580
+• BLEU (n-gram): 0.2393
+• BLEU-weighted: 0.4150
+• AST Match: 0.5854
+• DataFlow Match: 0.1923
+----------------------------------------
+
+Test Case: com_alibaba_csp_sentinel_TracerTest_setExceptionsToTrace
+Category: OD
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3690
+• BLEU (n-gram): 0.2833
+• BLEU-weighted: 0.4150
+• AST Match: 0.5854
+• DataFlow Match: 0.1923
+----------------------------------------
+
+Test Case: io_kubernetes_client_spring_extended_controller_KubernetesInformerCreatorTest_testInformerInjection
+Category: OD
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.2556
+• BLEU (n-gram): 0.0348
+• BLEU-weighted: 0.0437
+• AST Match: 0.5825
+• DataFlow Match: 0.3614
+----------------------------------------
+
+Test Case: org_apache_karaf_main_MainLockingTest_testLostMasterLockAfterThreshold
+Category: OD
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4844
+• BLEU (n-gram): 0.3000
+• BLEU-weighted: 0.3051
+• AST Match: 0.7564
+• DataFlow Match: 0.5763
+----------------------------------------
+
+Test Case: org_apache_ratis_server_impl_TestRetryCacheMetrics_testRetryCacheEntryCount
+Category: OD
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3216
+• BLEU (n-gram): 0.0040
+• BLEU-weighted: 0.0203
+• AST Match: 0.6406
+• DataFlow Match: 0.6216
+----------------------------------------
+
+Test Case: org_apache_ratis_server_metrics_TestLeaderElectionMetrics_testOnLeaderElectionCompletion
+Category: OD
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3199
+• BLEU (n-gram): 0.1811
+• BLEU-weighted: 0.3284
+• AST Match: 0.5000
+• DataFlow Match: 0.2703
+----------------------------------------
+
+Test Case: com_openpojo_validation_test_impl_GetterTesterTest_shouldSuccessfullyValidateEvenIfLoggingFails
+Category: OD-Vic
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.3338
+• BLEU (n-gram): 0.0075
+• BLEU-weighted: 0.0151
+• AST Match: 0.3125
+• DataFlow Match: 0.0000
+----------------------------------------
+
+Test Case: com_openpojo_validation_test_impl_SerializableTesterTest_shouldSkipOverNonSerializableClass
+Category: OD-Vic
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.4896
+• BLEU (n-gram): 0.2233
+• BLEU-weighted: 0.6307
+• AST Match: 0.4375
+• DataFlow Match: 0.6667
+----------------------------------------
+
+Test Case: org_springframework_data_envers_repository_support_QueryDslRepositoryIntegrationTests_testWithQueryDsl
+Category: OD-Vic
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1170
+• BLEU (n-gram): 0.0009
+• BLEU-weighted: 0.0039
+• AST Match: 0.0882
+• DataFlow Match: 0.3750
+----------------------------------------
+
+Test Case: org_springframework_data_envers_repository_support_QueryDslRepositoryIntegrationTests_testWithRevisions
+Category: OD-Vic
+Developer Fix: --- before.java
+Rating: FAIL
+Analysis:
+CodeBLEU Score: 0.1968
+• BLEU (n-gram): 0.0090
+• BLEU-weighted: 0.0098
+• AST Match: 0.4559
+• DataFlow Match: 0.3125
+----------------------------------------
+
+Test Case: com_openpojo_validation_test_impl_SetterTesterTest_shouldSuccessfullyValidateEvenIfLoggingFails
+Category: UD
+Developer Fix: --- before.java
+Rating: PARTIAL
+Analysis:
+CodeBLEU Score: 0.5592
+• BLEU (n-gram): 0.1349
+• BLEU-weighted: 0.6542
+• AST Match: 0.5312
+• DataFlow Match: 0.9167
+----------------------------------------
+
+

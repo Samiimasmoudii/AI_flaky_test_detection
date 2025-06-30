@@ -1,0 +1,140 @@
+Analysis Report: Python - o4_mini Test 00
+Generated: 2025-06-30 14:35:46
+================================================================================
+
+Test Case: tests_test_get_model.py
+Category: ID
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: fireworks_core_message_test.py_test_Message_set_get
+Category: NIO
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: fs_tests_test_addpath.py_test_addpath
+Category: NIO
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: pybrake_test_celery_integration.py_test_celery_integration
+Category: NIO
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_layout.py_test_rearrange
+Category: NIO
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_view_boosters_test_todo_list_api_test_relationship_updates.py_test_list_relationship_new_item
+Category: NIO
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: aud_test_aud.py_test_name
+Category: NOD
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_layout.py_test_rearrange
+Category: NOD
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_runium.py_TestTaskSkipping_test_processing
+Category: NOD
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: test_dictionary.py_test_dictionary_looping
+Category: OD
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: test_sized_buffer_backpressure_strategy.py_TestDropBackPressureStrategy_test_when_on_next_buffer_following_messages
+Category: OD
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_hosts.py_TestHost_test_host_enable
+Category: OD-Brit
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_resourcecfg.py_TestResourceCFG_test_resourcecfg_add
+Category: OD-Brit
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: test_geom.py_test_veceq
+Category: OD-Brit
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_cli.py_test_ls_star
+Category: OD-Vic
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_datetimes.py_test_nested_context_manager_with_tz_offsets
+Category: OD-Vic
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+
+Test Case: tests_test_uuid.py_test_uuid1_future
+Category: OD-Vic
+Developer Fix: --- before.py
+Rating: FAIL
+Analysis:
+CodeBLEU calculation failed: 'list' object has no attribute 'strip'
+--------------------------------------------------------------------------------
+

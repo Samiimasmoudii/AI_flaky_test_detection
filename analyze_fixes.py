@@ -1,3 +1,37 @@
+"""
+ Analysis Script with LLMs and CodeBLEU Support
+
+This script analyzes LLM-generated fixes against developer fixes using either:
+1. Gemini LLM Analysis (qualitative comparison)
+2. CodeBLEU Metric Analysis (quantitative similarity score with 4 components)
+
+SETUP:
+1. Install dependencies: pip install -r requirements.txt
+2. For Gemini analysis: Set GEMINI_API_KEY in .env file
+3. For CodeBLEU analysis: Install codebleu library (pip install codebleu)
+
+CodeBLEU COMPONENTS (equal weights 0.25 each):
+- BLEU: n-gram overlap
+- BLEUweight: gives more weight to important syntax tokens (assert, public, etc.)
+- MatchAST: measures syntactic tree similarity (AST)
+- MatchDF: measures semantic similarity using data-flow graphs
+
+USAGE:
+python analyze_fixes.py
+
+The script will guide you through:
+1. Choosing analysis method (Gemini or CodeBLEU)
+2. Selecting file type (Python or Java tests)
+3. Choosing which model and test numbers to analyze
+4. Optional Excel filtering of test cases
+
+RESULTS:
+- Individual test results saved to analysis_results/
+- Excel files with detailed breakdowns
+- Text files with comprehensive analysis
+- CodeBLEU scores include all 4 component scores
+"""
+
 import logging
 from datetime import datetime
 import os
@@ -8,6 +42,13 @@ import google.generativeai as genai
 from inc.config import RESULTS_DIR
 from inc.processor import setup_logging
 import re
+
+# CodeBLEU imports
+try:
+    from codebleu import calc_codebleu
+    CODEBLEU_AVAILABLE = True
+except ImportError:
+    CODEBLEU_AVAILABLE = False
 
 GEMINI_MODEL = "gemini-2.5-flash-preview-04-17"
 ANALYSIS_DIR = Path("analysis_results")
@@ -219,6 +260,62 @@ def select_model_and_test(file_type: str) -> tuple:
         except ValueError:
             print("Please enter a valid number (1 or 2).")
 
+def calculate_codebleu_score(dev_patch: str, llm_patch: str, language: str) -> dict:
+    """Calculate CodeBLEU score between developer and LLM patches."""
+    if not CODEBLEU_AVAILABLE:
+        return {'rating': 'FAIL', 'analysis': 'CodeBLEU library not available. Install with: pip install codebleu'}
+    
+    try:
+        # Map language names to CodeBLEU supported languages
+        lang_mapping = {'Python': 'python', 'Java': 'java', 'C': 'c', 'C++': 'cpp', 'C#': 'c_sharp', 'JavaScript': 'javascript', 'PHP': 'php', 'Go': 'go', 'Ruby': 'ruby', 'Rust': 'rust'}
+        codebleu_lang = lang_mapping.get(language, 'python')
+        
+        # Extract code from patches (remove diff markers)
+        def extract_code_from_patch(patch: str) -> str:
+            lines = patch.split('\n')
+            code_lines = []
+            for line in lines:
+                if line.startswith('+') and not line.startswith('+++'):
+                    code_lines.append(line[1:])  # Remove + prefix
+                elif not line.startswith('-') and not line.startswith('@@') and not line.startswith('diff ') and not line.startswith('index ') and not line.startswith('---') and not line.startswith('+++'):
+                    code_lines.append(line)
+            return '\n'.join(code_lines).strip()
+        
+        dev_code = extract_code_from_patch(dev_patch)
+        llm_code = extract_code_from_patch(llm_patch)
+        
+        if not dev_code.strip() or not llm_code.strip():
+            return {'rating': 'FAIL', 'analysis': 'Empty patch content'}
+        
+        # Tokenize code for CodeBLEU (split by whitespace and basic tokens)
+        def simple_tokenize(code):
+            return code.split()
+        
+        dev_tokens = simple_tokenize(dev_code)
+        llm_tokens = simple_tokenize(llm_code)
+        
+        # Debug: log what we're sending to CodeBLEU
+        logging.info(f"CodeBLEU input - Language: {codebleu_lang}")
+        logging.info(f"Dev tokens: {len(dev_tokens)}, LLM tokens: {len(llm_tokens)}")
+        
+        # Calculate CodeBLEU with equal weights (0.25 each)
+        result = calc_codebleu(references=[dev_tokens], predictions=[llm_tokens], lang=codebleu_lang, weights=(0.25, 0.25, 0.25, 0.25))
+        
+        codebleu_score = result['codebleu']
+        rating = 'SUCCESS' if codebleu_score >= 0.7 else 'PARTIAL' if codebleu_score >= 0.4 else 'FAIL'
+        
+        analysis = f"CodeBLEU Score: {codebleu_score:.4f}\n"
+        analysis += f"• BLEU (n-gram): {result['ngram_match_score']:.4f}\n"
+        analysis += f"• BLEU-weighted: {result['weighted_ngram_match_score']:.4f}\n" 
+        analysis += f"• AST Match: {result['syntax_match_score']:.4f}\n"
+        analysis += f"• DataFlow Match: {result['dataflow_match_score']:.4f}"
+        
+        return {'rating': rating, 'analysis': analysis}
+        
+    except Exception as e:
+        logging.error(f"CodeBLEU error: {e}")
+        return {'rating': 'FAIL', 'analysis': f"CodeBLEU calculation failed: {str(e)}"}
+
 def analyze_with_gemini(before_code: str, dev_patch: str, llm_patch: str, model_name: str, test_number: str, category: str, language: str) -> dict:
     """Use Gemini to analyze and compare the fixes with simplified criteria."""
     prompt = f"""
@@ -396,7 +493,7 @@ def save_combined_analysis_results(all_analyses: list, model_name: str, test_num
 
 def choose_excel_filtering() -> bool:
     """Let user choose whether to use Excel file filtering or process all test cases."""
-    excel_path = Path("Manual_Comparison.xlsx")
+    excel_path = Path("/analysis_results/Java_o4_mini_Test10_20250602_154303/analysis_Java_o4_mini_Test10_20250602_154303.xlsx")
     
     if not excel_path.exists():
         print("📄 No Manual_Comparison.xlsx file found - will process all available test cases.")
@@ -460,6 +557,39 @@ def main():
         if not selected_file_type:
             return
         
+        # Choose analysis method
+        print("\n" + "="*60)
+        print("ANALYSIS METHOD SELECTION")
+        print("="*60)
+        methods = []
+        if os.getenv('GEMINI_API_KEY'):
+            methods.append(('gemini', 'Gemini LLM Analysis'))
+        if CODEBLEU_AVAILABLE:
+            methods.append(('codebleu', 'CodeBLEU Metric Analysis'))
+        
+        if not methods:
+            print("❌ No analysis methods available!")
+            print("   - Set GEMINI_API_KEY for Gemini analysis")
+            print("   - Install codebleu for CodeBLEU analysis")
+            return
+            
+        for i, (_, desc) in enumerate(methods, 1):
+            print(f"{i}. {desc}")
+        
+        while True:
+            try:
+                if len(methods) == 1:
+                    analysis_method = methods[0][0]
+                    print(f"✅ Auto-selected: {methods[0][1]}")
+                    break
+                choice = int(input("Choose analysis method (1-{}): ".format(len(methods))))
+                if 1 <= choice <= len(methods):
+                    analysis_method = methods[choice-1][0]
+                    break
+                print("Invalid choice.")
+            except ValueError:
+                print("Please enter a number.")
+        
         numbering_info = get_test_numbering_info(selected_file_type)
         language = numbering_info['language']
         file_ext = numbering_info['file_ext']
@@ -498,6 +628,7 @@ def main():
             return
         
         print(f"\n🔍 Analyzing: {language} - {selected_model} Test(s) {', '.join(selected_tests)}")
+        print(f"🔬 Method: {analysis_method.upper()}")
         print("=" * 60)
         
         # Process each selected test
@@ -594,10 +725,13 @@ def main():
                     logging.warning(f"No LLM patch found for {file_info['test_case']} Test {selected_test}")
                     continue
                 
-                # Analyze with Gemini
-                result = analyze_with_gemini(before_code, dev_patch, llm_patch, 
-                                           selected_model, selected_test, 
-                                           file_info['category'], language)
+                # Analyze with selected method
+                if analysis_method == 'codebleu':
+                    result = calculate_codebleu_score(dev_patch, llm_patch, language)
+                else:
+                    result = analyze_with_gemini(before_code, dev_patch, llm_patch, 
+                                               selected_model, selected_test, 
+                                               file_info['category'], language)
                 
                 analysis = {
                     'category': file_info['category'],
