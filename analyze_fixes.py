@@ -494,7 +494,7 @@ def save_combined_analysis_results(all_analyses: list, model_name: str, test_num
 def choose_excel_filtering() -> bool:
     """Let user choose whether to use Excel file filtering or process all test cases."""
     excel_path = Path("/analysis_results/Java_o4_mini_Test10_20250602_154303/analysis_Java_o4_mini_Test10_20250602_154303.xlsx")
-    
+   
     if not excel_path.exists():
         print("📄 No Manual_Comparison.xlsx file found - will process all available test cases.")
         return False
